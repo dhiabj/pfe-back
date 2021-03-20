@@ -1,0 +1,5 @@
+fos_user_security:
+  resource: "@FOSUserBundle/Resources/config/routing/security.xml"
+api_auth_login:
+  path: /api/auth/login
+  methods:  [POST]
