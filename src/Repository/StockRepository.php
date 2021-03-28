@@ -22,7 +22,40 @@ class StockRepository extends ServiceEntityRepository
     // /**
     //  * @return Stock[] Returns an array of Stock objects
     //  */
+
+    public function findByAll(
+        $code_valeur,
+        $code_adherent,
+        $nature_compte,
+        $accounting_date,
+        $stock_exchange_date
+    ) {
+        return $this->createQueryBuilder('m')
+            ->select('m.id,m.Quantity,m.Direction,m.StockExchangeDate,m.AccountingDate,
+            mc.MembershipCode,
+            i.Isin,n.NatureCode,
+            c.CategoryCode')
+            ->leftJoin('m.MembershipCode', 'mc')
+            ->leftJoin('m.Isin', 'i')
+            ->leftJoin('m.NatureCode', 'n')
+            ->leftJoin('m.CategoryCode', 'c')
+            ->where('i.Isin like :code_valeur')
+            ->setParameter('code_valeur', '%' . $code_valeur . '%')
+            ->andWhere('mc.MembershipCode like :code_adherent')
+            ->setParameter('code_adherent', '%' . $code_adherent . '%')
+            ->andWhere('n.NatureCode like :nature_compte')
+            ->setParameter('nature_compte', '%' . $nature_compte . '%')
+            ->andWhere('m.StockExchangeDate like :stock_exchange_date')
+            ->setParameter('stock_exchange_date', '%' . $stock_exchange_date . '%')
+            ->andWhere('m.AccountingDate like :accounting_date')
+            ->setParameter('accounting_date', '%' . $accounting_date . '%')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     /*
+
+    
     public function findByExampleField($value)
     {
         return $this->createQueryBuilder('s')

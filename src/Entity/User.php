@@ -21,4 +21,9 @@ class User extends BaseUser
     {
         parent::__construct();
     }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 }

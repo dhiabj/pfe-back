@@ -18,22 +18,26 @@ class Stock
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=3, nullable=true)
+     * @ORM\ManyToOne(targetEntity="Member",inversedBy="Stocks")
+     * @ORM\JoinColumn(name="membership_code", referencedColumnName="membership_code")
      */
     private $MembershipCode;
 
     /**
-     * @ORM\Column(type="string", length=12, nullable=true)
+     * @ORM\ManyToOne(targetEntity="Value",inversedBy="Stocks")
+     * @ORM\JoinColumn(name="isin", referencedColumnName="isin")
      */
     private $Isin;
 
     /**
-     * @ORM\Column(type="string", length=2, nullable=true)
+     * @ORM\ManyToOne(targetEntity="AccountType",inversedBy="Stocks")
+     * @ORM\JoinColumn(name="nature_code", referencedColumnName="nature_code")
      */
     private $NatureCode;
 
     /**
-     * @ORM\Column(type="string", length=3, nullable=true)
+     * @ORM\ManyToOne(targetEntity="Category",inversedBy="Stocks")
+     * @ORM\JoinColumn(name="category_code", referencedColumnName="category_code")
      */
     private $CategoryCode;
 
@@ -60,54 +64,6 @@ class Stock
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getMembershipCode(): ?int
-    {
-        return $this->MembershipCode;
-    }
-
-    public function setMembershipCode(?int $MembershipCode): self
-    {
-        $this->MembershipCode = $MembershipCode;
-
-        return $this;
-    }
-
-    public function getIsin(): ?string
-    {
-        return $this->Isin;
-    }
-
-    public function setIsin(?string $Isin): self
-    {
-        $this->Isin = $Isin;
-
-        return $this;
-    }
-
-    public function getNatureCode(): ?string
-    {
-        return $this->NatureCode;
-    }
-
-    public function setNatureCode(?string $NatureCode): self
-    {
-        $this->NatureCode = $NatureCode;
-
-        return $this;
-    }
-
-    public function getCategoryCode(): ?string
-    {
-        return $this->CategoryCode;
-    }
-
-    public function setCategoryCode(?string $CategoryCode): self
-    {
-        $this->CategoryCode = $CategoryCode;
-
-        return $this;
     }
 
     public function getQuantity(): ?string
@@ -154,6 +110,54 @@ class Stock
     public function setAccountingDate(?\DateTimeInterface $AccountingDate): self
     {
         $this->AccountingDate = $AccountingDate;
+
+        return $this;
+    }
+
+    public function getIsin(): ?Value
+    {
+        return $this->Isin;
+    }
+
+    public function setIsin(?Value $Isin): self
+    {
+        $this->Isin = $Isin;
+
+        return $this;
+    }
+
+    public function getNatureCode(): ?AccountType
+    {
+        return $this->NatureCode;
+    }
+
+    public function setNatureCode(?AccountType $NatureCode): self
+    {
+        $this->NatureCode = $NatureCode;
+
+        return $this;
+    }
+
+    public function getMembershipCode(): ?Member
+    {
+        return $this->MembershipCode;
+    }
+
+    public function setMembershipCode(?Member $MembershipCode): self
+    {
+        $this->MembershipCode = $MembershipCode;
+
+        return $this;
+    }
+
+    public function getCategoryCode(): ?Category
+    {
+        return $this->CategoryCode;
+    }
+
+    public function setCategoryCode(?Category $CategoryCode): self
+    {
+        $this->CategoryCode = $CategoryCode;
 
         return $this;
     }

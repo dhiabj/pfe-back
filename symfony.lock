@@ -134,6 +134,9 @@
     "lcobucci/jwt": {
         "version": "3.4.5"
     },
+    "league/csv": {
+        "version": "9.6.2"
+    },
     "lexik/jwt-authentication-bundle": {
         "version": "2.5",
         "recipe": {
@@ -291,6 +294,9 @@
             "version": "1.0",
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
+    },
+    "symfony/mime": {
+        "version": "v5.2.5"
     },
     "symfony/options-resolver": {
         "version": "v5.2.3"

@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Mouvement;
+use App\Entity\MvtUploadTable;
+use App\service\MouvementService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,19 +15,36 @@ use Symfony\Component\HttpFoundation\Response;
 class MouvementController extends AbstractController
 {
     private $em;
-
-    public function __construct(EntityManagerInterface $em)
+    private $mouvementService;
+    public function __construct(EntityManagerInterface $em, MouvementService $mouvementService)
     {
         $this->em = $em;
+        $this->mouvementService = $mouvementService;
     }
     /**
      * @Route("/api/mouvements", name="app_mouvements_all", methods={"GET"})
      */
-    public function getAllMouvements(): Response
+    public function getAllMouvements(Request $request): Response
     {
-        $mouvements = $this->em->getRepository(Mouvement::class)->findAll();
-
+        $search = json_decode($request->get('search'));
+        $mouvements = $this->em->getRepository(Mouvement::class)->findByAll(
+            $search->code_valeur,
+            $search->code_adherent,
+            $search->nature_compte,
+            $search->accounting_date,
+            $search->stock_exchange_date
+        );
         return $this->json($mouvements);
+    }
+
+    /**
+     * @Route("/api/mouvement-upload-table", name="app_mouvement_upload_all", methods={"GET"})
+     */
+    public function getMvtUploads(): Response
+    {
+        $mvtable = $this->em->getRepository(MvtUploadTable::class)->findAll();
+
+        return $this->json($mvtable);
     }
     /**
      * @Route("/api/mouvements-fill", name="app_mouvements_fill", methods={"POST"})
@@ -34,32 +53,28 @@ class MouvementController extends AbstractController
     {
         $file = $request->files->get('movments');
         $line = file($file);
+
+        //dd($file);
         /*$fileCSV = fopen("csv/" . $file->getFilename() . ".txt", "w");
         fwrite($fileCSV, $line);
         fclose($fileCSV);
         chmod("csv/" . $file->getFilename() . ".txt", 0644);*/
 
         for ($i = 1; $i < sizeof($line) - 1; $i++) {
-
-            //dump(strlen($line[$i]));
-            $mouvement = new Mouvement();
-            $mouvement->setOperationCode(substr($line[$i], 0, 2));
-            $mouvement->setIsin(substr($line[$i], 2, 12));
-            $StockExchangeDate = new DateTime();
-            $AccountingDate = new DateTime();
-            $mouvement->setStockExchangeDate($StockExchangeDate->setDate(substr($line[$i], 18, 4), substr($line[$i], 16, 2), substr($line[$i], 14, 2)));
-            $mouvement->setAccountingDate($AccountingDate->setDate(substr($line[$i], 26, 4), substr($line[$i], 24, 2), substr($line[$i], 22, 2)));
-            $mouvement->setDeliveryMemberCode(substr($line[$i], 30, 3));
-            $mouvement->setDeliveryAccountType(substr($line[$i], 33, 2));
-            $mouvement->setDeliveryCategoryCredit(substr($line[$i], 35, 3));
-            $mouvement->setDeliveredMemberCode(substr($line[$i], 38, 3));
-            $mouvement->setDeliveredAccountType(substr($line[$i], 41, 2));
-            $mouvement->setDeliveredCategoryCredit(substr($line[$i], 43, 3));
-            $mouvement->setTitlesNumber(substr($line[$i], 46, 10));
-            $mouvement->setAmount(substr($line[$i], 56, 15));
-            $this->em->persist($mouvement);
+            $this->mouvementService->AddMouvement($line, $i);
         }
         $this->em->flush();
-        return $this->json('movement file uploded in database');
+        $filename = $file->getClientOriginalName();
+        $nblines = count($line);
+        $mvtable = new MvtUploadTable();
+        $mvtable->setFileName($filename);
+        $mvtable->setStateFile('Fichier Traite');
+        $mvtable->setNbLines($nblines);
+        $mvtable->setUploadDate(new DateTime());
+        $StockExchangeDate = new DateTime();
+        $mvtable->setStockExchangeDate($StockExchangeDate->setDate(substr($line[1], 18, 4), substr($line[1], 16, 2), substr($line[1], 14, 2)));
+        $this->em->persist($mvtable);
+        $this->em->flush();
+        return $this->json('file uploded in database');
     }
 }
