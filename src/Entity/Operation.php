@@ -14,7 +14,7 @@ class Operation
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="string", length=2, nullable=true)
+     * @ORM\Column(type="string", length=2)
      */
     private $OperationCode;
 

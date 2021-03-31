@@ -25,9 +25,10 @@ class Member
     private $MemberName;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\ManyToOne(targetEntity="MemberType",inversedBy="Members")
+     * @ORM\JoinColumn(name="member_type_code", referencedColumnName="member_type_code", onDelete="SET NULL")
      */
-    private $MemberType;
+    private $MemberTypeCode;
 
     /**
      * @ORM\Column(type="date", nullable=true)
@@ -83,18 +84,6 @@ class Member
         return $this;
     }
 
-    public function getMemberType(): ?string
-    {
-        return $this->MemberType;
-    }
-
-    public function setMemberType(?string $MemberType): self
-    {
-        $this->MemberType = $MemberType;
-
-        return $this;
-    }
-
     public function getUpdateDate(): ?\DateTimeInterface
     {
         return $this->UpdateDate;
@@ -103,6 +92,18 @@ class Member
     public function setUpdateDate(?\DateTimeInterface $UpdateDate): self
     {
         $this->UpdateDate = $UpdateDate;
+
+        return $this;
+    }
+
+    public function getMemberTypeCode(): ?MemberType
+    {
+        return $this->MemberTypeCode;
+    }
+
+    public function setMemberTypeCode(?MemberType $MemberTypeCode): self
+    {
+        $this->MemberTypeCode = $MemberTypeCode;
 
         return $this;
     }

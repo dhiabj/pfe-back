@@ -14,7 +14,7 @@ class Value
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="string", length=12, nullable=true)
+     * @ORM\Column(type="string", length=12)
      */
     private $Isin;
 
