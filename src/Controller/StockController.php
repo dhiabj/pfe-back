@@ -77,4 +77,17 @@ class StockController extends AbstractController
         $this->em->flush();
         return $this->json('file uploded in database');
     }
+
+    /**
+     * @Route("/api/delete-stock/{id}", name="app_delete_stock", methods={"DELETE"})
+     */
+    public function deleteMouvement(Request $request)
+    {
+        $stcktable = $this->getDoctrine()->getRepository(StockUploadTable::class)->find($request->get('id'));
+        if ($stcktable) {
+            $this->em->remove($stcktable);
+            $this->em->flush();
+        }
+        return $this->json('file deleted successfully');
+    }
 }

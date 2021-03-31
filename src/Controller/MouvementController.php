@@ -51,7 +51,7 @@ class MouvementController extends AbstractController
      */
     public function fillAllMouvements(Request $request): Response
     {
-        $file = $request->files->get('movments');
+        $file = $request->files->get('mouvements');
         $line = file($file);
 
         //dd($file);
@@ -76,5 +76,18 @@ class MouvementController extends AbstractController
         $this->em->persist($mvtable);
         $this->em->flush();
         return $this->json('file uploded in database');
+    }
+
+    /**
+     * @Route("/api/delete-mouvement/{id}", name="app_delete_mouvement", methods={"DELETE"})
+     */
+    public function deleteMouvement(Request $request)
+    {
+        $mvtable = $this->getDoctrine()->getRepository(MvtUploadTable::class)->find($request->get('id'));
+        if ($mvtable) {
+            $this->em->remove($mvtable);
+            $this->em->flush();
+        }
+        return $this->json('file deleted successfully');
     }
 }
