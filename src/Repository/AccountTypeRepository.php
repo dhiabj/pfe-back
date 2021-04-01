@@ -22,6 +22,15 @@ class AccountTypeRepository extends ServiceEntityRepository
     // /**
     //  * @return AccountType[] Returns an array of AccountType objects
     //  */
+
+    public function findByAll()
+    {
+        return $this->createQueryBuilder('m')
+            ->select('m.NatureCode,m.NatureAccountLabel')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     /*
     public function findByExampleField($value)
     {

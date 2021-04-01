@@ -22,6 +22,15 @@ class OperationRepository extends ServiceEntityRepository
     // /**
     //  * @return Operation[] Returns an array of Operation objects
     //  */
+
+    public function findByAll()
+    {
+        return $this->createQueryBuilder('m')
+            ->select('m.OperationCode,m.OperationLabel,m.UpdateDate')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     /*
     public function findByExampleField($value)
     {

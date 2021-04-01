@@ -22,6 +22,15 @@ class CategoryRepository extends ServiceEntityRepository
     // /**
     //  * @return Category[] Returns an array of Category objects
     //  */
+
+    public function findByAll()
+    {
+        return $this->createQueryBuilder('m')
+            ->select('m.CategoryCode,m.CategoryLabel')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     /*
     public function findByExampleField($value)
     {

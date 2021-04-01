@@ -22,6 +22,16 @@ class MemberRepository extends ServiceEntityRepository
     // /**
     //  * @return Member[] Returns an array of Member objects
     //  */
+
+    public function findByAll()
+    {
+        return $this->createQueryBuilder('m')
+            ->select('m.MembershipCode,mc.MemberTypeCode,m.MemberName,m.UpdateDate')
+            ->leftJoin('m.MemberTypeCode', 'mc')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     /*
     public function findByExampleField($value)
     {

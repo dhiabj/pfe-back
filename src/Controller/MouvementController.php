@@ -84,10 +84,8 @@ class MouvementController extends AbstractController
     public function deleteMouvement(Request $request)
     {
         $mvtable = $this->getDoctrine()->getRepository(MvtUploadTable::class)->find($request->get('id'));
-        if ($mvtable) {
-            $this->em->remove($mvtable);
-            $this->em->flush();
-        }
+        $this->em->remove($mvtable);
+        $this->em->flush();
         return $this->json('file deleted successfully');
     }
 }

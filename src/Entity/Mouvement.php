@@ -19,13 +19,13 @@ class Mouvement
 
     /**
      * @ORM\ManyToOne(targetEntity="Operation",inversedBy="Mouvements")
-     * @ORM\JoinColumn(name="operation_code", referencedColumnName="operation_code", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="operation_code", referencedColumnName="operation_code", onDelete="SET NULL")
      */
     private $OperationCode;
 
     /**
      * @ORM\ManyToOne(targetEntity="Value",inversedBy="Mouvements")
-     * @ORM\JoinColumn(name="isin", referencedColumnName="isin", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="isin", referencedColumnName="isin", onDelete="SET NULL")
      */
     private $Isin;
 
@@ -41,37 +41,37 @@ class Mouvement
 
     /**
      * @ORM\ManyToOne(targetEntity="Member",inversedBy="DeliveryMemberMouvements")
-     * @ORM\JoinColumn(name="delivery_member_code", referencedColumnName="membership_code", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="delivery_member_code", referencedColumnName="membership_code", onDelete="SET NULL")
      */
     private $DeliveryMemberCode;
 
     /**
      * @ORM\ManyToOne(targetEntity="AccountType",inversedBy="DeliveryAccountTypeMouvements")
-     * @ORM\JoinColumn(name="delivery_account_type", referencedColumnName="nature_code", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="delivery_account_type", referencedColumnName="nature_code", onDelete="SET NULL")
      */
     private $DeliveryAccountType;
 
     /**
      * @ORM\ManyToOne(targetEntity="Category",inversedBy="DeliveryCategoryMouvements")
-     * @ORM\JoinColumn(name="delivery_category_credit", referencedColumnName="category_code", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="delivery_category_credit", referencedColumnName="category_code", onDelete="SET NULL")
      */
     private $DeliveryCategoryCredit;
 
     /**
      * @ORM\ManyToOne(targetEntity="Member",inversedBy="DeliveredMemberMouvements")
-     * @ORM\JoinColumn(name="delivered_member_code", referencedColumnName="membership_code", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="delivered_member_code", referencedColumnName="membership_code", onDelete="SET NULL")
      */
     private $DeliveredMemberCode;
 
     /**
      * @ORM\ManyToOne(targetEntity="AccountType",inversedBy="DeliveredAccountTypeMouvements")
-     * @ORM\JoinColumn(name="delivered_account_type", referencedColumnName="nature_code", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="delivered_account_type", referencedColumnName="nature_code", onDelete="SET NULL")
      */
     private $DeliveredAccountType;
 
     /**
      * @ORM\ManyToOne(targetEntity="Category",inversedBy="DeliveredCategoryMouvements")
-     * @ORM\JoinColumn(name="delivered_category_credit", referencedColumnName="category_code", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="delivered_category_credit", referencedColumnName="category_code", onDelete="SET NULL")
      */
     private $DeliveredCategoryCredit;
 

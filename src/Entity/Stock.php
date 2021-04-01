@@ -19,25 +19,25 @@ class Stock
 
     /**
      * @ORM\ManyToOne(targetEntity="Member",inversedBy="Stocks")
-     * @ORM\JoinColumn(name="membership_code", referencedColumnName="membership_code", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="membership_code", referencedColumnName="membership_code", onDelete="SET NULL")
      */
     private $MembershipCode;
 
     /**
      * @ORM\ManyToOne(targetEntity="Value",inversedBy="Stocks")
-     * @ORM\JoinColumn(name="isin", referencedColumnName="isin", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="isin", referencedColumnName="isin", onDelete="SET NULL")
      */
     private $Isin;
 
     /**
      * @ORM\ManyToOne(targetEntity="AccountType",inversedBy="Stocks")
-     * @ORM\JoinColumn(name="nature_code", referencedColumnName="nature_code", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="nature_code", referencedColumnName="nature_code", onDelete="SET NULL")
      */
     private $NatureCode;
 
     /**
      * @ORM\ManyToOne(targetEntity="Category",inversedBy="Stocks")
-     * @ORM\JoinColumn(name="category_code", referencedColumnName="category_code", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="category_code", referencedColumnName="category_code", onDelete="SET NULL")
      */
     private $CategoryCode;
 
