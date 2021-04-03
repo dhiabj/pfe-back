@@ -33,9 +33,13 @@ class CategoryController extends AbstractController
      */
     public function deleteCategory(Request $request)
     {
-        $cc = $this->getDoctrine()->getRepository(Category::class)->find($request->get('CategoryCode'));
-        $this->em->remove($cc);
-        $this->em->flush();
-        return $this->json('Category Code deleted successfully');
+        $category = $this->em->getRepository(Category::class)->find($request->get('CategoryCode'));
+        if ($category) {
+            $this->em->remove($category);
+            $this->em->flush();
+            return $this->json('Category deleted successfully');
+        } else {
+            return $this->json('Category not found');
+        }
     }
 }

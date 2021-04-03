@@ -23,9 +23,9 @@ class MemberController extends AbstractController
      */
     public function getAllMembers(): Response
     {
-        $member = $this->em->getRepository(Member::class)->findByAll();
+        $members = $this->em->getRepository(Member::class)->findByAll();
 
-        return $this->json($member);
+        return $this->json($members);
     }
 
     /**
@@ -33,9 +33,13 @@ class MemberController extends AbstractController
      */
     public function deleteMember(Request $request)
     {
-        $mc = $this->getDoctrine()->getRepository(Member::class)->find($request->get('MembershipCode'));
-        $this->em->remove($mc);
-        $this->em->flush();
-        return $this->json('Membership Code deleted successfully');
+        $member = $this->em->getRepository(Member::class)->find($request->get('MembershipCode'));
+        if ($member) {
+            $this->em->remove($member);
+            $this->em->flush();
+            return $this->json('Member deleted successfully');
+        } else {
+            return $this->json('Member not found');
+        }
     }
 }

@@ -33,9 +33,13 @@ class AccountTypeController extends AbstractController
      */
     public function deleteAccountType(Request $request)
     {
-        $nc = $this->getDoctrine()->getRepository(AccountType::class)->find($request->get('NatureCode'));
-        $this->em->remove($nc);
-        $this->em->flush();
-        return $this->json('Nature Code deleted successfully');
+        $accounttype = $this->em->getRepository(AccountType::class)->find($request->get('NatureCode'));
+        if ($accounttype) {
+            $this->em->remove($accounttype);
+            $this->em->flush();
+            return $this->json('Account Type deleted successfully');
+        } else {
+            return $this->json('Account Type not found');
+        }
     }
 }

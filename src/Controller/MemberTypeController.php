@@ -33,9 +33,13 @@ class MemberTypeController extends AbstractController
      */
     public function deleteMemberType(Request $request)
     {
-        $mtc = $this->getDoctrine()->getRepository(MemberType::class)->find($request->get('MemberTypeCode'));
-        $this->em->remove($mtc);
-        $this->em->flush();
-        return $this->json('Member Type Code deleted successfully');
+        $membertype = $this->em->getRepository(MemberType::class)->find($request->get('MemberTypeCode'));
+        if ($membertype) {
+            $this->em->remove($membertype);
+            $this->em->flush();
+            return $this->json('Member Type deleted successfully');
+        } else {
+            return $this->json('Member Type not found');
+        }
     }
 }

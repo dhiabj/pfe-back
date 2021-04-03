@@ -23,9 +23,9 @@ class OperationController extends AbstractController
      */
     public function getAllOperations(): Response
     {
-        $operation = $this->em->getRepository(Operation::class)->findByAll();
+        $operations = $this->em->getRepository(Operation::class)->findByAll();
 
-        return $this->json($operation);
+        return $this->json($operations);
     }
 
     /**
@@ -33,9 +33,13 @@ class OperationController extends AbstractController
      */
     public function deleteOperation(Request $request)
     {
-        $oc = $this->getDoctrine()->getRepository(Operation::class)->find($request->get('OperationCode'));
-        $this->em->remove($oc);
-        $this->em->flush();
-        return $this->json('Operation Code deleted successfully');
+        $operation = $this->em->getRepository(Operation::class)->find($request->get('OperationCode'));
+        if ($operation) {
+            $this->em->remove($operation);
+            $this->em->flush();
+            return $this->json('Operation deleted successfully');
+        } else {
+            return $this->json('Operation not found');
+        }
     }
 }

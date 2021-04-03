@@ -83,11 +83,13 @@ class StockController extends AbstractController
      */
     public function deleteMouvement(Request $request)
     {
-        $stcktable = $this->getDoctrine()->getRepository(StockUploadTable::class)->find($request->get('id'));
+        $stcktable = $this->em->getRepository(StockUploadTable::class)->find($request->get('id'));
         if ($stcktable) {
             $this->em->remove($stcktable);
             $this->em->flush();
+            return $this->json('file deleted successfully');
+        } else {
+            return $this->json('file not found');
         }
-        return $this->json('file deleted successfully');
     }
 }
