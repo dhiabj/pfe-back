@@ -15,7 +15,13 @@ class Member
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="string", length=3)
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", length=3, unique=true)
      */
     private $MembershipCode;
 
@@ -25,39 +31,41 @@ class Member
     private $MemberName;
 
     /**
-     * @ORM\ManyToOne(targetEntity="MemberType",inversedBy="Members")
-     * @ORM\JoinColumn(name="member_type_code", referencedColumnName="member_type_code", onDelete="SET NULL")
-     */
-    private $MemberTypeCode;
-
-    /**
      * @ORM\Column(type="date", nullable=true)
      */
     private $UpdateDate;
 
     /**
-     * @ORM\OneToMany(targetEntity="Stock",mappedBy="MembershipCode")
-     * @ORM\JoinColumn(name="stock_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity=MemberType::class, inversedBy="members")
+     * @ORM\JoinColumn(nullable=true)
      */
-    private $Stocks;
+    private $MemberType;
 
     /**
-     * @ORM\OneToMany(targetEntity="Mouvement",mappedBy="DeliveredMemberCode")
-     * @ORM\JoinColumn(name="mouvement_id", referencedColumnName="id")
+     * @ORM\OneToMany(targetEntity=Mouvement::class, mappedBy="DeliveryMemberCode")
      */
-    private $DeliveredMemberMouvements;
+    private $mouvements;
 
     /**
-     * @ORM\OneToMany(targetEntity="Mouvement",mappedBy="DeliveryMemberCode")
-     * @ORM\JoinColumn(name="mouvement_id", referencedColumnName="id")
+     * @ORM\OneToMany(targetEntity=Mouvement::class, mappedBy="DeliveredMemberCode")
      */
-    private $DeliveryMemberMouvements;
+    private $mouvementl;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Stock::class, mappedBy="MembershipCode")
+     */
+    private $stocks;
 
     public function __construct()
     {
-        $this->Stocks = new ArrayCollection();
-        $this->DeliveredMemberMouvements = new ArrayCollection();
-        $this->DeliveryMemberMouvements = new ArrayCollection();
+        $this->mouvements = new ArrayCollection();
+        $this->mouvementl = new ArrayCollection();
+        $this->stocks = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     public function getMembershipCode(): ?string
@@ -65,7 +73,7 @@ class Member
         return $this->MembershipCode;
     }
 
-    public function setMembershipCode(?string $MembershipCode): self
+    public function setMembershipCode(string $MembershipCode): self
     {
         $this->MembershipCode = $MembershipCode;
 
@@ -77,7 +85,7 @@ class Member
         return $this->MemberName;
     }
 
-    public function setMemberName(?string $MemberName): self
+    public function setMemberName(string $MemberName): self
     {
         $this->MemberName = $MemberName;
 
@@ -96,14 +104,74 @@ class Member
         return $this;
     }
 
-    public function getMemberTypeCode(): ?MemberType
+    public function getMemberType(): ?MemberType
     {
-        return $this->MemberTypeCode;
+        return $this->MemberType;
     }
 
-    public function setMemberTypeCode(?MemberType $MemberTypeCode): self
+    public function setMemberType(?MemberType $MemberType): self
     {
-        $this->MemberTypeCode = $MemberTypeCode;
+        $this->MemberType = $MemberType;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Mouvement[]
+     */
+    public function getMouvements(): Collection
+    {
+        return $this->mouvements;
+    }
+
+    public function addMouvement(Mouvement $mouvement): self
+    {
+        if (!$this->mouvements->contains($mouvement)) {
+            $this->mouvements[] = $mouvement;
+            $mouvement->setDeliveryMemberCode($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMouvement(Mouvement $mouvement): self
+    {
+        if ($this->mouvements->removeElement($mouvement)) {
+            // set the owning side to null (unless already changed)
+            if ($mouvement->getDeliveryMemberCode() === $this) {
+                $mouvement->setDeliveryMemberCode(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Mouvement[]
+     */
+    public function getMouvementl(): Collection
+    {
+        return $this->mouvementl;
+    }
+
+    public function addMouvementl(Mouvement $mouvementl): self
+    {
+        if (!$this->mouvementl->contains($mouvementl)) {
+            $this->mouvementl[] = $mouvementl;
+            $mouvementl->setDeliveredMemberCode($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMouvementl(Mouvement $mouvementl): self
+    {
+        if ($this->mouvementl->removeElement($mouvementl)) {
+            // set the owning side to null (unless already changed)
+            if ($mouvementl->getDeliveredMemberCode() === $this) {
+                $mouvementl->setDeliveredMemberCode(null);
+            }
+        }
 
         return $this;
     }
@@ -113,13 +181,13 @@ class Member
      */
     public function getStocks(): Collection
     {
-        return $this->Stocks;
+        return $this->stocks;
     }
 
     public function addStock(Stock $stock): self
     {
-        if (!$this->Stocks->contains($stock)) {
-            $this->Stocks[] = $stock;
+        if (!$this->stocks->contains($stock)) {
+            $this->stocks[] = $stock;
             $stock->setMembershipCode($this);
         }
 
@@ -128,70 +196,10 @@ class Member
 
     public function removeStock(Stock $stock): self
     {
-        if ($this->Stocks->removeElement($stock)) {
+        if ($this->stocks->removeElement($stock)) {
             // set the owning side to null (unless already changed)
             if ($stock->getMembershipCode() === $this) {
                 $stock->setMembershipCode(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Mouvement[]
-     */
-    public function getDeliveredMemberMouvements(): Collection
-    {
-        return $this->DeliveredMemberMouvements;
-    }
-
-    public function addDeliveredMemberMouvement(Mouvement $deliveredMemberMouvement): self
-    {
-        if (!$this->DeliveredMemberMouvements->contains($deliveredMemberMouvement)) {
-            $this->DeliveredMemberMouvements[] = $deliveredMemberMouvement;
-            $deliveredMemberMouvement->setDeliveredMemberCode($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDeliveredMemberMouvement(Mouvement $deliveredMemberMouvement): self
-    {
-        if ($this->DeliveredMemberMouvements->removeElement($deliveredMemberMouvement)) {
-            // set the owning side to null (unless already changed)
-            if ($deliveredMemberMouvement->getDeliveredMemberCode() === $this) {
-                $deliveredMemberMouvement->setDeliveredMemberCode(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Mouvement[]
-     */
-    public function getDeliveryMemberMouvements(): Collection
-    {
-        return $this->DeliveryMemberMouvements;
-    }
-
-    public function addDeliveryMemberMouvement(Mouvement $deliveryMemberMouvement): self
-    {
-        if (!$this->DeliveryMemberMouvements->contains($deliveryMemberMouvement)) {
-            $this->DeliveryMemberMouvements[] = $deliveryMemberMouvement;
-            $deliveryMemberMouvement->setDeliveryMemberCode($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDeliveryMemberMouvement(Mouvement $deliveryMemberMouvement): self
-    {
-        if ($this->DeliveryMemberMouvements->removeElement($deliveryMemberMouvement)) {
-            // set the owning side to null (unless already changed)
-            if ($deliveryMemberMouvement->getDeliveryMemberCode() === $this) {
-                $deliveryMemberMouvement->setDeliveryMemberCode(null);
             }
         }
 

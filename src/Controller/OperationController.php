@@ -29,11 +29,11 @@ class OperationController extends AbstractController
     }
 
     /**
-     * @Route("/api/delete-operation/{OperationCode}", name="app_delete_operation", methods={"DELETE"})
+     * @Route("/api/delete-operation/{id}", name="app_delete_operation", methods={"DELETE"})
      */
     public function deleteOperation(Request $request)
     {
-        $operation = $this->em->getRepository(Operation::class)->find($request->get('OperationCode'));
+        $operation = $this->em->getRepository(Operation::class)->find($request->get('id'));
         if ($operation) {
             $this->em->remove($operation);
             $this->em->flush();

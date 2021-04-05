@@ -12,11 +12,15 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Category
 {
-
-
     /**
      * @ORM\Id
-     * @ORM\Column(type="string", length=3)
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", length=3, unique=true)
      */
     private $CategoryCode;
 
@@ -26,38 +30,38 @@ class Category
     private $CategoryLabel;
 
     /**
-     * @ORM\OneToMany(targetEntity="Stock",mappedBy="CategoryCode")
-     * @ORM\JoinColumn(name="stock_id", referencedColumnName="id")
+     * @ORM\OneToMany(targetEntity=Mouvement::class, mappedBy="DeliveryCategoryCredit")
      */
-    private $Stocks;
+    private $mouvements;
 
     /**
-     * @ORM\OneToMany(targetEntity="Mouvement",mappedBy="DeliveredCategoryCredit")
-     * @ORM\JoinColumn(name="mouvement_id", referencedColumnName="id")
+     * @ORM\OneToMany(targetEntity=Mouvement::class, mappedBy="DeliveredCategoryCredit")
      */
-    private $DeliveredCategoryMouvements;
+    private $mouvementl;
 
     /**
-     * @ORM\OneToMany(targetEntity="Mouvement",mappedBy="DeliveryCategoryCredit")
-     * @ORM\JoinColumn(name="mouvement_id", referencedColumnName="id")
+     * @ORM\OneToMany(targetEntity=Stock::class, mappedBy="CategoryCode")
      */
-    private $DeliveryCategoryMouvements;
+    private $stocks;
 
     public function __construct()
     {
-        $this->Stocks = new ArrayCollection();
-        $this->DeliveredCategoryMouvements = new ArrayCollection();
-        $this->DeliveryCategoryMouvements = new ArrayCollection();
+        $this->mouvements = new ArrayCollection();
+        $this->mouvementl = new ArrayCollection();
+        $this->stocks = new ArrayCollection();
     }
 
-
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function getCategoryCode(): ?string
     {
         return $this->CategoryCode;
     }
 
-    public function setCategoryCode(?string $CategoryCode): self
+    public function setCategoryCode(string $CategoryCode): self
     {
         $this->CategoryCode = $CategoryCode;
 
@@ -69,9 +73,69 @@ class Category
         return $this->CategoryLabel;
     }
 
-    public function setCategoryLabel(?string $CategoryLabel): self
+    public function setCategoryLabel(string $CategoryLabel): self
     {
         $this->CategoryLabel = $CategoryLabel;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Mouvement[]
+     */
+    public function getMouvements(): Collection
+    {
+        return $this->mouvements;
+    }
+
+    public function addMouvement(Mouvement $mouvement): self
+    {
+        if (!$this->mouvements->contains($mouvement)) {
+            $this->mouvements[] = $mouvement;
+            $mouvement->setDeliveryCategoryCredit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMouvement(Mouvement $mouvement): self
+    {
+        if ($this->mouvements->removeElement($mouvement)) {
+            // set the owning side to null (unless already changed)
+            if ($mouvement->getDeliveryCategoryCredit() === $this) {
+                $mouvement->setDeliveryCategoryCredit(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Mouvement[]
+     */
+    public function getMouvementl(): Collection
+    {
+        return $this->mouvementl;
+    }
+
+    public function addMouvementl(Mouvement $mouvementl): self
+    {
+        if (!$this->mouvementl->contains($mouvementl)) {
+            $this->mouvementl[] = $mouvementl;
+            $mouvementl->setDeliveredCategoryCredit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMouvementl(Mouvement $mouvementl): self
+    {
+        if ($this->mouvementl->removeElement($mouvementl)) {
+            // set the owning side to null (unless already changed)
+            if ($mouvementl->getDeliveredCategoryCredit() === $this) {
+                $mouvementl->setDeliveredCategoryCredit(null);
+            }
+        }
 
         return $this;
     }
@@ -81,13 +145,13 @@ class Category
      */
     public function getStocks(): Collection
     {
-        return $this->Stocks;
+        return $this->stocks;
     }
 
     public function addStock(Stock $stock): self
     {
-        if (!$this->Stocks->contains($stock)) {
-            $this->Stocks[] = $stock;
+        if (!$this->stocks->contains($stock)) {
+            $this->stocks[] = $stock;
             $stock->setCategoryCode($this);
         }
 
@@ -96,70 +160,10 @@ class Category
 
     public function removeStock(Stock $stock): self
     {
-        if ($this->Stocks->removeElement($stock)) {
+        if ($this->stocks->removeElement($stock)) {
             // set the owning side to null (unless already changed)
             if ($stock->getCategoryCode() === $this) {
                 $stock->setCategoryCode(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Mouvement[]
-     */
-    public function getDeliveredCategoryMouvements(): Collection
-    {
-        return $this->DeliveredCategoryMouvements;
-    }
-
-    public function addDeliveredCategoryMouvement(Mouvement $deliveredCategoryMouvement): self
-    {
-        if (!$this->DeliveredCategoryMouvements->contains($deliveredCategoryMouvement)) {
-            $this->DeliveredCategoryMouvements[] = $deliveredCategoryMouvement;
-            $deliveredCategoryMouvement->setDeliveredCategoryCredit($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDeliveredCategoryMouvement(Mouvement $deliveredCategoryMouvement): self
-    {
-        if ($this->DeliveredCategoryMouvements->removeElement($deliveredCategoryMouvement)) {
-            // set the owning side to null (unless already changed)
-            if ($deliveredCategoryMouvement->getDeliveredCategoryCredit() === $this) {
-                $deliveredCategoryMouvement->setDeliveredCategoryCredit(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Mouvement[]
-     */
-    public function getDeliveryCategoryMouvements(): Collection
-    {
-        return $this->DeliveryCategoryMouvements;
-    }
-
-    public function addDeliveryCategoryMouvement(Mouvement $deliveryCategoryMouvement): self
-    {
-        if (!$this->DeliveryCategoryMouvements->contains($deliveryCategoryMouvement)) {
-            $this->DeliveryCategoryMouvements[] = $deliveryCategoryMouvement;
-            $deliveryCategoryMouvement->setDeliveryCategoryCredit($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDeliveryCategoryMouvement(Mouvement $deliveryCategoryMouvement): self
-    {
-        if ($this->DeliveryCategoryMouvements->removeElement($deliveryCategoryMouvement)) {
-            // set the owning side to null (unless already changed)
-            if ($deliveryCategoryMouvement->getDeliveryCategoryCredit() === $this) {
-                $deliveryCategoryMouvement->setDeliveryCategoryCredit(null);
             }
         }
 

@@ -18,18 +18,6 @@ class Mouvement
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Operation",inversedBy="Mouvements")
-     * @ORM\JoinColumn(name="operation_code", referencedColumnName="operation_code", onDelete="SET NULL")
-     */
-    private $OperationCode;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Value",inversedBy="Mouvements")
-     * @ORM\JoinColumn(name="isin", referencedColumnName="isin", onDelete="SET NULL")
-     */
-    private $Isin;
-
-    /**
      * @ORM\Column(type="date", nullable=true)
      */
     private $StockExchangeDate;
@@ -40,38 +28,44 @@ class Mouvement
     private $AccountingDate;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Member",inversedBy="DeliveryMemberMouvements")
-     * @ORM\JoinColumn(name="delivery_member_code", referencedColumnName="membership_code", onDelete="SET NULL")
+     * @ORM\ManyToOne(targetEntity=Operation::class, inversedBy="mouvements")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $OperationCode;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Member::class, inversedBy="mouvements")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $DeliveryMemberCode;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AccountType",inversedBy="DeliveryAccountTypeMouvements")
-     * @ORM\JoinColumn(name="delivery_account_type", referencedColumnName="nature_code", onDelete="SET NULL")
+     * @ORM\ManyToOne(targetEntity=AccountType::class, inversedBy="mouvements")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $DeliveryAccountType;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Category",inversedBy="DeliveryCategoryMouvements")
-     * @ORM\JoinColumn(name="delivery_category_credit", referencedColumnName="category_code", onDelete="SET NULL")
+     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="mouvements")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $DeliveryCategoryCredit;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Member",inversedBy="DeliveredMemberMouvements")
-     * @ORM\JoinColumn(name="delivered_member_code", referencedColumnName="membership_code", onDelete="SET NULL")
+     * @ORM\ManyToOne(targetEntity=Member::class, inversedBy="mouvementl")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $DeliveredMemberCode;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AccountType",inversedBy="DeliveredAccountTypeMouvements")
-     * @ORM\JoinColumn(name="delivered_account_type", referencedColumnName="nature_code", onDelete="SET NULL")
+     * @ORM\ManyToOne(targetEntity=AccountType::class, inversedBy="mouvementl")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $DeliveredAccountType;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Category",inversedBy="DeliveredCategoryMouvements")
-     * @ORM\JoinColumn(name="delivered_category_credit", referencedColumnName="category_code", onDelete="SET NULL")
+     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="mouvementl")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $DeliveredCategoryCredit;
 
@@ -84,6 +78,12 @@ class Mouvement
      * @ORM\Column(type="string", length=15, nullable=true)
      */
     private $Amount;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Value::class, inversedBy="mouvements")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $Isin;
 
     public function getId(): ?int
     {
@@ -138,54 +138,6 @@ class Mouvement
         return $this;
     }
 
-    public function getDeliveredCategoryCredit(): ?Category
-    {
-        return $this->DeliveredCategoryCredit;
-    }
-
-    public function setDeliveredCategoryCredit(?Category $DeliveredCategoryCredit): self
-    {
-        $this->DeliveredCategoryCredit = $DeliveredCategoryCredit;
-
-        return $this;
-    }
-
-    public function getDeliveryCategoryCredit(): ?Category
-    {
-        return $this->DeliveryCategoryCredit;
-    }
-
-    public function setDeliveryCategoryCredit(?Category $DeliveryCategoryCredit): self
-    {
-        $this->DeliveryCategoryCredit = $DeliveryCategoryCredit;
-
-        return $this;
-    }
-
-    public function getDeliveryAccountType(): ?AccountType
-    {
-        return $this->DeliveryAccountType;
-    }
-
-    public function setDeliveryAccountType(?AccountType $DeliveryAccountType): self
-    {
-        $this->DeliveryAccountType = $DeliveryAccountType;
-
-        return $this;
-    }
-
-    public function getDeliveredAccountType(): ?AccountType
-    {
-        return $this->DeliveredAccountType;
-    }
-
-    public function setDeliveredAccountType(?AccountType $DeliveredAccountType): self
-    {
-        $this->DeliveredAccountType = $DeliveredAccountType;
-
-        return $this;
-    }
-
     public function getOperationCode(): ?Operation
     {
         return $this->OperationCode;
@@ -194,18 +146,6 @@ class Mouvement
     public function setOperationCode(?Operation $OperationCode): self
     {
         $this->OperationCode = $OperationCode;
-
-        return $this;
-    }
-
-    public function getIsin(): ?Value
-    {
-        return $this->Isin;
-    }
-
-    public function setIsin(?Value $Isin): self
-    {
-        $this->Isin = $Isin;
 
         return $this;
     }
@@ -222,6 +162,30 @@ class Mouvement
         return $this;
     }
 
+    public function getDeliveryAccountType(): ?AccountType
+    {
+        return $this->DeliveryAccountType;
+    }
+
+    public function setDeliveryAccountType(?AccountType $DeliveryAccountType): self
+    {
+        $this->DeliveryAccountType = $DeliveryAccountType;
+
+        return $this;
+    }
+
+    public function getDeliveryCategoryCredit(): ?Category
+    {
+        return $this->DeliveryCategoryCredit;
+    }
+
+    public function setDeliveryCategoryCredit(?Category $DeliveryCategoryCredit): self
+    {
+        $this->DeliveryCategoryCredit = $DeliveryCategoryCredit;
+
+        return $this;
+    }
+
     public function getDeliveredMemberCode(): ?Member
     {
         return $this->DeliveredMemberCode;
@@ -230,6 +194,42 @@ class Mouvement
     public function setDeliveredMemberCode(?Member $DeliveredMemberCode): self
     {
         $this->DeliveredMemberCode = $DeliveredMemberCode;
+
+        return $this;
+    }
+
+    public function getDeliveredAccountType(): ?AccountType
+    {
+        return $this->DeliveredAccountType;
+    }
+
+    public function setDeliveredAccountType(?AccountType $DeliveredAccountType): self
+    {
+        $this->DeliveredAccountType = $DeliveredAccountType;
+
+        return $this;
+    }
+
+    public function getDeliveredCategoryCredit(): ?Category
+    {
+        return $this->DeliveredCategoryCredit;
+    }
+
+    public function setDeliveredCategoryCredit(?Category $DeliveredCategoryCredit): self
+    {
+        $this->DeliveredCategoryCredit = $DeliveredCategoryCredit;
+
+        return $this;
+    }
+
+    public function getIsin(): ?Value
+    {
+        return $this->Isin;
+    }
+
+    public function setIsin(?Value $Isin): self
+    {
+        $this->Isin = $Isin;
 
         return $this;
     }

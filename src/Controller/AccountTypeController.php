@@ -29,11 +29,11 @@ class AccountTypeController extends AbstractController
     }
 
     /**
-     * @Route("/api/delete-account-type/{NatureCode}", name="app_delete_account_type", methods={"DELETE"})
+     * @Route("/api/delete-account-type/{id}", name="app_delete_account_type", methods={"DELETE"})
      */
     public function deleteAccountType(Request $request)
     {
-        $accounttype = $this->em->getRepository(AccountType::class)->find($request->get('NatureCode'));
+        $accounttype = $this->em->getRepository(AccountType::class)->find($request->get('id'));
         if ($accounttype) {
             $this->em->remove($accounttype);
             $this->em->flush();

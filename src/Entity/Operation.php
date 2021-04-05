@@ -14,7 +14,13 @@ class Operation
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="string", length=2)
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", length=2, unique=true)
      */
     private $OperationCode;
 
@@ -29,14 +35,18 @@ class Operation
     private $UpdateDate;
 
     /**
-     * @ORM\OneToMany(targetEntity="Mouvement",mappedBy="OperationCode")
-     * @ORM\JoinColumn(name="mouvement_id", referencedColumnName="id")
+     * @ORM\OneToMany(targetEntity=Mouvement::class, mappedBy="OperationCode")
      */
-    private $Mouvements;
+    private $mouvements;
 
     public function __construct()
     {
-        $this->Mouvements = new ArrayCollection();
+        $this->mouvements = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     public function getOperationCode(): ?string
@@ -44,7 +54,7 @@ class Operation
         return $this->OperationCode;
     }
 
-    public function setOperationCode(?string $OperationCode): self
+    public function setOperationCode(string $OperationCode): self
     {
         $this->OperationCode = $OperationCode;
 
@@ -56,7 +66,7 @@ class Operation
         return $this->OperationLabel;
     }
 
-    public function setOperationLabel(?string $OperationLabel): self
+    public function setOperationLabel(string $OperationLabel): self
     {
         $this->OperationLabel = $OperationLabel;
 
@@ -80,13 +90,13 @@ class Operation
      */
     public function getMouvements(): Collection
     {
-        return $this->Mouvements;
+        return $this->mouvements;
     }
 
     public function addMouvement(Mouvement $mouvement): self
     {
-        if (!$this->Mouvements->contains($mouvement)) {
-            $this->Mouvements[] = $mouvement;
+        if (!$this->mouvements->contains($mouvement)) {
+            $this->mouvements[] = $mouvement;
             $mouvement->setOperationCode($this);
         }
 
@@ -95,7 +105,7 @@ class Operation
 
     public function removeMouvement(Mouvement $mouvement): self
     {
-        if ($this->Mouvements->removeElement($mouvement)) {
+        if ($this->mouvements->removeElement($mouvement)) {
             // set the owning side to null (unless already changed)
             if ($mouvement->getOperationCode() === $this) {
                 $mouvement->setOperationCode(null);

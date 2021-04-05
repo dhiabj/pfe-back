@@ -22,63 +22,78 @@ class MouvementService
 
     public function AddMouvement($line, $i)
     {
-        $operation = $this->em->getRepository(Operation::class)->find(substr($line[$i], 0, 2));
-        $value = $this->em->getRepository(Value::class)->find(substr($line[$i], 2, 12));
-        $deliveryMember = $this->em->getRepository(Member::class)->find(substr($line[$i], 30, 3));
-        $deliveredAccount = $this->em->getRepository(AccountType::class)->find(substr($line[$i], 41, 2));
-        $deliveredCategory = $this->em->getRepository(Category::class)->find(substr($line[$i], 43, 3));
-
+        $codeOp = substr($line[$i], 0, 2);
+        $operation = $this->em->getRepository(Operation::class)->findOneBy(['OperationCode' => $codeOp]);
         if (!$operation) {
             $operation = new Operation();
-            $operation->setOperationCode(substr($line[$i], 0, 2));
+            $operation->setOperationCode($codeOp);
             $this->em->persist($operation);
             $this->em->flush();
         }
+
+        $codeVal = substr($line[$i], 2, 12);
+        $value = $this->em->getRepository(Value::class)->findOneBy(['Isin' => $codeVal]);
         if (!$value) {
             $value = new Value();
-            $value->setIsin(substr($line[$i], 2, 12));
+            $value->setIsin($codeVal);
             $this->em->persist($value);
             $this->em->flush();
         }
+
+        $dymc = substr($line[$i], 30, 3);
+        $deliveryMember = $this->em->getRepository(Member::class)->findOneBy(['MembershipCode' => $dymc]);
         if (!$deliveryMember) {
             $deliveryMember = new Member();
-            $deliveryMember->setMembershipCode(substr($line[$i], 30, 3));
+            $deliveryMember->setMembershipCode($dymc);
             $this->em->persist($deliveryMember);
             $this->em->flush();
         }
-        $deliveredMember = $this->em->getRepository(Member::class)->find(substr($line[$i], 38, 3));
-        if (!$deliveredMember) {
-            $deliveredMember = new Member();
-            $deliveredMember->setMembershipCode(substr($line[$i], 38, 3));
-            $this->em->persist($deliveredMember);
-            $this->em->flush();
-        }
-        if (!$deliveredAccount) {
-            $deliveredAccount = new AccountType();
-            $deliveredAccount->setNatureCode(substr($line[$i], 41, 2));
-            $this->em->persist($deliveredAccount);
-            $this->em->flush();
-        }
-        $deliveryAccount = $this->em->getRepository(AccountType::class)->find(substr($line[$i], 33, 2));
+
+        $dync = substr($line[$i], 33, 2);
+        $deliveryAccount = $this->em->getRepository(AccountType::class)->findOneBy(['NatureCode' => $dync]);
         if (!$deliveryAccount) {
             $deliveryAccount = new AccountType();
-            $deliveryAccount->setNatureCode(substr($line[$i], 33, 2));
+            $deliveryAccount->setNatureCode($dync);
             $this->em->persist($deliveryAccount);
             $this->em->flush();
         }
+
+        $dedmc = substr($line[$i], 38, 3);
+        $deliveredMember = $this->em->getRepository(Member::class)->findOneBy(['MembershipCode' => $dedmc]);
+        if (!$deliveredMember) {
+            $deliveredMember = new Member();
+            $deliveredMember->setMembershipCode($dedmc);
+            $this->em->persist($deliveredMember);
+            $this->em->flush();
+        }
+
+        $dednc = substr($line[$i], 41, 2);
+        $deliveredAccount = $this->em->getRepository(AccountType::class)->findOneBy(['NatureCode' => $dednc]);
+        if (!$deliveredAccount) {
+            $deliveredAccount = new AccountType();
+            $deliveredAccount->setNatureCode($dednc);
+            $this->em->persist($deliveredAccount);
+            $this->em->flush();
+        }
+
+        $dedcc = substr($line[$i], 43, 3);
+        $deliveredCategory = $this->em->getRepository(Category::class)->findOneBy(['CategoryCode' => $dedcc]);
         if (!$deliveredCategory) {
             $deliveredCategory = new Category();
-            $deliveredCategory->setCategoryCode(substr($line[$i], 43, 3));
+            $deliveredCategory->setCategoryCode($dedcc);
             $this->em->persist($deliveredCategory);
             $this->em->flush();
         }
-        $deliveryCategory = $this->em->getRepository(Category::class)->find(substr($line[$i], 35, 3));
+
+        $dycc = substr($line[$i], 35, 3);
+        $deliveryCategory = $this->em->getRepository(Category::class)->findOneBy(['CategoryCode' => $dycc]);
         if (!$deliveryCategory) {
             $deliveryCategory = new Category();
-            $deliveryCategory->setCategoryCode(substr($line[$i], 35, 3));
+            $deliveryCategory->setCategoryCode($dycc);
             $this->em->persist($deliveryCategory);
             $this->em->flush();
         }
+
         $mouvement = new Mouvement();
         $mouvement->setOperationCode($operation);
         $mouvement->setIsin($value);

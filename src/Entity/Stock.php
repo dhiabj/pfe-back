@@ -18,30 +18,6 @@ class Stock
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Member",inversedBy="Stocks")
-     * @ORM\JoinColumn(name="membership_code", referencedColumnName="membership_code", onDelete="SET NULL")
-     */
-    private $MembershipCode;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Value",inversedBy="Stocks")
-     * @ORM\JoinColumn(name="isin", referencedColumnName="isin", onDelete="SET NULL")
-     */
-    private $Isin;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="AccountType",inversedBy="Stocks")
-     * @ORM\JoinColumn(name="nature_code", referencedColumnName="nature_code", onDelete="SET NULL")
-     */
-    private $NatureCode;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Category",inversedBy="Stocks")
-     * @ORM\JoinColumn(name="category_code", referencedColumnName="category_code", onDelete="SET NULL")
-     */
-    private $CategoryCode;
-
-    /**
      * @ORM\Column(type="string", length=10, nullable=true)
      */
     private $Quantity;
@@ -61,6 +37,30 @@ class Stock
      */
     private $AccountingDate;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Member::class, inversedBy="stocks")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $MembershipCode;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=AccountType::class, inversedBy="stocks")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $NatureCode;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="stocks")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $CategoryCode;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Value::class, inversedBy="stocks")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $Isin;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -71,7 +71,7 @@ class Stock
         return $this->Quantity;
     }
 
-    public function setQuantity(?string $Quantity): self
+    public function setQuantity(string $Quantity): self
     {
         $this->Quantity = $Quantity;
 
@@ -114,14 +114,14 @@ class Stock
         return $this;
     }
 
-    public function getIsin(): ?Value
+    public function getMembershipCode(): ?Member
     {
-        return $this->Isin;
+        return $this->MembershipCode;
     }
 
-    public function setIsin(?Value $Isin): self
+    public function setMembershipCode(?Member $MembershipCode): self
     {
-        $this->Isin = $Isin;
+        $this->MembershipCode = $MembershipCode;
 
         return $this;
     }
@@ -138,18 +138,6 @@ class Stock
         return $this;
     }
 
-    public function getMembershipCode(): ?Member
-    {
-        return $this->MembershipCode;
-    }
-
-    public function setMembershipCode(?Member $MembershipCode): self
-    {
-        $this->MembershipCode = $MembershipCode;
-
-        return $this;
-    }
-
     public function getCategoryCode(): ?Category
     {
         return $this->CategoryCode;
@@ -158,6 +146,18 @@ class Stock
     public function setCategoryCode(?Category $CategoryCode): self
     {
         $this->CategoryCode = $CategoryCode;
+
+        return $this;
+    }
+
+    public function getIsin(): ?Value
+    {
+        return $this->Isin;
+    }
+
+    public function setIsin(?Value $Isin): self
+    {
+        $this->Isin = $Isin;
 
         return $this;
     }

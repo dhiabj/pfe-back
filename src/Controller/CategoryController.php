@@ -29,11 +29,11 @@ class CategoryController extends AbstractController
     }
 
     /**
-     * @Route("/api/delete-category/{CategoryCode}", name="app_delete_category", methods={"DELETE"})
+     * @Route("/api/delete-category/{id}", name="app_delete_category", methods={"DELETE"})
      */
     public function deleteCategory(Request $request)
     {
-        $category = $this->em->getRepository(Category::class)->find($request->get('CategoryCode'));
+        $category = $this->em->getRepository(Category::class)->find($request->get('id'));
         if ($category) {
             $this->em->remove($category);
             $this->em->flush();

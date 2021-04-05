@@ -14,7 +14,13 @@ class MemberType
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="string", length=255)
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     private $MemberTypeCode;
 
@@ -29,14 +35,18 @@ class MemberType
     private $UpdateDate;
 
     /**
-     * @ORM\OneToMany(targetEntity="Member",mappedBy="MemberTypeCode")
-     * @ORM\JoinColumn(name="member_id", referencedColumnName="id")
+     * @ORM\OneToMany(targetEntity=Member::class, mappedBy="MemberType", orphanRemoval=true)
      */
-    private $Members;
+    private $members;
 
     public function __construct()
     {
-        $this->Members = new ArrayCollection();
+        $this->members = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     public function getMemberTypeCode(): ?string
@@ -44,12 +54,19 @@ class MemberType
         return $this->MemberTypeCode;
     }
 
+    public function setMemberTypeCode(string $MemberTypeCode): self
+    {
+        $this->MemberTypeCode = $MemberTypeCode;
+
+        return $this;
+    }
+
     public function getMemberTypeLabel(): ?string
     {
         return $this->MemberTypeLabel;
     }
 
-    public function setMemberTypeLabel(?string $MemberTypeLabel): self
+    public function setMemberTypeLabel(string $MemberTypeLabel): self
     {
         $this->MemberTypeLabel = $MemberTypeLabel;
 
@@ -71,27 +88,27 @@ class MemberType
     /**
      * @return Collection|Member[]
      */
-    public function getMembers(): Collection
+    public function getmembers(): Collection
     {
-        return $this->Members;
+        return $this->members;
     }
 
-    public function addMember(Member $member): self
+    public function addMember(Member $Member): self
     {
-        if (!$this->Members->contains($member)) {
-            $this->Members[] = $member;
-            $member->setMemberTypeCode($this);
+        if (!$this->members->contains($Member)) {
+            $this->members[] = $Member;
+            $Member->setMemberType($this);
         }
 
         return $this;
     }
 
-    public function removeMember(Member $member): self
+    public function removeMember(Member $Member): self
     {
-        if ($this->Members->removeElement($member)) {
+        if ($this->members->removeElement($Member)) {
             // set the owning side to null (unless already changed)
-            if ($member->getMemberTypeCode() === $this) {
-                $member->setMemberTypeCode(null);
+            if ($Member->getMemberType() === $this) {
+                $Member->setMemberType(null);
             }
         }
 

@@ -16,7 +16,13 @@ class AccountType
 
     /**
      * @ORM\Id
-     * @ORM\Column(type="string", length=2)
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", length=2, unique=true)
      */
     private $NatureCode;
 
@@ -26,39 +32,38 @@ class AccountType
     private $NatureAccountLabel;
 
     /**
-     * @ORM\OneToMany(targetEntity="Stock",mappedBy="NatureCode")
-     * @ORM\JoinColumn(name="stock_id", referencedColumnName="id")
+     * @ORM\OneToMany(targetEntity=Mouvement::class, mappedBy="DeliveredAccountType")
      */
-    private $Stocks;
+    private $mouvements;
 
     /**
-     * @ORM\OneToMany(targetEntity="Mouvement",mappedBy="DeliveredAccountType")
-     * @ORM\JoinColumn(name="mouvement_id", referencedColumnName="id")
-
+     * @ORM\OneToMany(targetEntity=Mouvement::class, mappedBy="DeliveryAccountType")
      */
-    private $DeliveredAccountTypeMouvements;
+    private $mouvementl;
 
     /**
-     * @ORM\OneToMany(targetEntity="Mouvement",mappedBy="DeliveryAccountType")
-     * @ORM\JoinColumn(name="mouvement_id", referencedColumnName="id")
+     * @ORM\OneToMany(targetEntity=Stock::class, mappedBy="NatureCode")
      */
-    private $DeliveryAccountTypeMouvements;
+    private $stocks;
 
     public function __construct()
     {
-        $this->Stocks = new ArrayCollection();
-        $this->DeliveredAccountTypeMouvements = new ArrayCollection();
-        $this->DeliveryAccountTypeMouvements = new ArrayCollection();
+        $this->mouvements = new ArrayCollection();
+        $this->mouvementl = new ArrayCollection();
+        $this->stocks = new ArrayCollection();
     }
 
-
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function getNatureCode(): ?string
     {
         return $this->NatureCode;
     }
 
-    public function setNatureCode(?string $NatureCode): self
+    public function setNatureCode(string $NatureCode): self
     {
         $this->NatureCode = $NatureCode;
 
@@ -70,9 +75,69 @@ class AccountType
         return $this->NatureAccountLabel;
     }
 
-    public function setNatureAccountLabel(?string $NatureAccountLabel): self
+    public function setNatureAccountLabel(string $NatureAccountLabel): self
     {
         $this->NatureAccountLabel = $NatureAccountLabel;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Mouvement[]
+     */
+    public function getMouvements(): Collection
+    {
+        return $this->mouvements;
+    }
+
+    public function addMouvement(Mouvement $mouvement): self
+    {
+        if (!$this->mouvements->contains($mouvement)) {
+            $this->mouvements[] = $mouvement;
+            $mouvement->setDeliveredAccountType($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMouvement(Mouvement $mouvement): self
+    {
+        if ($this->mouvements->removeElement($mouvement)) {
+            // set the owning side to null (unless already changed)
+            if ($mouvement->getDeliveredAccountType() === $this) {
+                $mouvement->setDeliveredAccountType(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Mouvement[]
+     */
+    public function getMouvementl(): Collection
+    {
+        return $this->mouvementl;
+    }
+
+    public function addMouvementl(Mouvement $mouvementl): self
+    {
+        if (!$this->mouvementl->contains($mouvementl)) {
+            $this->mouvementl[] = $mouvementl;
+            $mouvementl->setDeliveryAccountType($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMouvementl(Mouvement $mouvementl): self
+    {
+        if ($this->mouvementl->removeElement($mouvementl)) {
+            // set the owning side to null (unless already changed)
+            if ($mouvementl->getDeliveryAccountType() === $this) {
+                $mouvementl->setDeliveryAccountType(null);
+            }
+        }
 
         return $this;
     }
@@ -82,13 +147,13 @@ class AccountType
      */
     public function getStocks(): Collection
     {
-        return $this->Stocks;
+        return $this->stocks;
     }
 
     public function addStock(Stock $stock): self
     {
-        if (!$this->Stocks->contains($stock)) {
-            $this->Stocks[] = $stock;
+        if (!$this->stocks->contains($stock)) {
+            $this->stocks[] = $stock;
             $stock->setNatureCode($this);
         }
 
@@ -97,70 +162,10 @@ class AccountType
 
     public function removeStock(Stock $stock): self
     {
-        if ($this->Stocks->removeElement($stock)) {
+        if ($this->stocks->removeElement($stock)) {
             // set the owning side to null (unless already changed)
             if ($stock->getNatureCode() === $this) {
                 $stock->setNatureCode(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Mouvement[]
-     */
-    public function getDeliveredAccountTypeMouvements(): Collection
-    {
-        return $this->DeliveredAccountTypeMouvements;
-    }
-
-    public function addDeliveredAccountTypeMouvement(Mouvement $deliveredAccountTypeMouvement): self
-    {
-        if (!$this->DeliveredAccountTypeMouvements->contains($deliveredAccountTypeMouvement)) {
-            $this->DeliveredAccountTypeMouvements[] = $deliveredAccountTypeMouvement;
-            $deliveredAccountTypeMouvement->setDeliveredAccountType($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDeliveredAccountTypeMouvement(Mouvement $deliveredAccountTypeMouvement): self
-    {
-        if ($this->DeliveredAccountTypeMouvements->removeElement($deliveredAccountTypeMouvement)) {
-            // set the owning side to null (unless already changed)
-            if ($deliveredAccountTypeMouvement->getDeliveredAccountType() === $this) {
-                $deliveredAccountTypeMouvement->setDeliveredAccountType(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Mouvement[]
-     */
-    public function getDeliveryAccountTypeMouvements(): Collection
-    {
-        return $this->DeliveryAccountTypeMouvements;
-    }
-
-    public function addDeliveryAccountTypeMouvement(Mouvement $deliveryAccountTypeMouvement): self
-    {
-        if (!$this->DeliveryAccountTypeMouvements->contains($deliveryAccountTypeMouvement)) {
-            $this->DeliveryAccountTypeMouvements[] = $deliveryAccountTypeMouvement;
-            $deliveryAccountTypeMouvement->setDeliveryAccountType($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDeliveryAccountTypeMouvement(Mouvement $deliveryAccountTypeMouvement): self
-    {
-        if ($this->DeliveryAccountTypeMouvements->removeElement($deliveryAccountTypeMouvement)) {
-            // set the owning side to null (unless already changed)
-            if ($deliveryAccountTypeMouvement->getDeliveryAccountType() === $this) {
-                $deliveryAccountTypeMouvement->setDeliveryAccountType(null);
             }
         }
 

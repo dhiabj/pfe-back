@@ -14,7 +14,13 @@ class Value
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="string", length=12)
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", length=12, unique=true)
      */
     private $Isin;
 
@@ -24,21 +30,54 @@ class Value
     private $ValueLabel;
 
     /**
-     * @ORM\OneToMany(targetEntity="Stock",mappedBy="Isin")
-     * @ORM\JoinColumn(name="stock_id", referencedColumnName="id")
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $Stocks;
+    private $Mnemonique;
 
     /**
-     * @ORM\OneToMany(targetEntity="Mouvement",mappedBy="Isin")
-     * @ORM\JoinColumn(name="mouvement_id", referencedColumnName="id")
+     * @ORM\Column(type="string", length=2, nullable=true)
      */
-    private $Mouvements;
+    private $ValueType;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $NbTitresadmisBourse;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $NbCodFlott;
+
+    /**
+     * @ORM\Column(type="string", length=3, nullable=true)
+     */
+    private $GroupCotation;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $SuperSecteur;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Mouvement::class, mappedBy="Isin")
+     */
+    private $mouvements;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Stock::class, mappedBy="Isin")
+     */
+    private $stocks;
 
     public function __construct()
     {
-        $this->Stocks = new ArrayCollection();
-        $this->Mouvements = new ArrayCollection();
+        $this->mouvements = new ArrayCollection();
+        $this->stocks = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     public function getIsin(): ?string
@@ -46,7 +85,7 @@ class Value
         return $this->Isin;
     }
 
-    public function setIsin(?string $Isin): self
+    public function setIsin(string $Isin): self
     {
         $this->Isin = $Isin;
 
@@ -65,32 +104,74 @@ class Value
         return $this;
     }
 
-    /**
-     * @return Collection|Stock[]
-     */
-    public function getStocks(): Collection
+    public function getMnemonique(): ?string
     {
-        return $this->Stocks;
+        return $this->Mnemonique;
     }
 
-    public function addStock(Stock $stock): self
+    public function setMnemonique(?string $Mnemonique): self
     {
-        if (!$this->Stocks->contains($stock)) {
-            $this->Stocks[] = $stock;
-            $stock->setIsin($this);
-        }
+        $this->Mnemonique = $Mnemonique;
 
         return $this;
     }
 
-    public function removeStock(Stock $stock): self
+    public function getValueType(): ?string
     {
-        if ($this->Stocks->removeElement($stock)) {
-            // set the owning side to null (unless already changed)
-            if ($stock->getIsin() === $this) {
-                $stock->setIsin(null);
-            }
-        }
+        return $this->ValueType;
+    }
+
+    public function setValueType(?string $ValueType): self
+    {
+        $this->ValueType = $ValueType;
+
+        return $this;
+    }
+
+    public function getNbTitresadmisBourse(): ?string
+    {
+        return $this->NbTitresadmisBourse;
+    }
+
+    public function setNbTitresadmisBourse(?string $NbTitresadmisBourse): self
+    {
+        $this->NbTitresadmisBourse = $NbTitresadmisBourse;
+
+        return $this;
+    }
+
+    public function getNbCodFlott(): ?string
+    {
+        return $this->NbCodFlott;
+    }
+
+    public function setNbCodFlott(?string $NbCodFlott): self
+    {
+        $this->NbCodFlott = $NbCodFlott;
+
+        return $this;
+    }
+
+    public function getGroupCotation(): ?string
+    {
+        return $this->GroupCotation;
+    }
+
+    public function setGroupCotation(?string $GroupCotation): self
+    {
+        $this->GroupCotation = $GroupCotation;
+
+        return $this;
+    }
+
+    public function getSuperSecteur(): ?string
+    {
+        return $this->SuperSecteur;
+    }
+
+    public function setSuperSecteur(?string $SuperSecteur): self
+    {
+        $this->SuperSecteur = $SuperSecteur;
 
         return $this;
     }
@@ -100,13 +181,13 @@ class Value
      */
     public function getMouvements(): Collection
     {
-        return $this->Mouvements;
+        return $this->mouvements;
     }
 
     public function addMouvement(Mouvement $mouvement): self
     {
-        if (!$this->Mouvements->contains($mouvement)) {
-            $this->Mouvements[] = $mouvement;
+        if (!$this->mouvements->contains($mouvement)) {
+            $this->mouvements[] = $mouvement;
             $mouvement->setIsin($this);
         }
 
@@ -115,10 +196,40 @@ class Value
 
     public function removeMouvement(Mouvement $mouvement): self
     {
-        if ($this->Mouvements->removeElement($mouvement)) {
+        if ($this->mouvements->removeElement($mouvement)) {
             // set the owning side to null (unless already changed)
             if ($mouvement->getIsin() === $this) {
                 $mouvement->setIsin(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Stock[]
+     */
+    public function getStocks(): Collection
+    {
+        return $this->stocks;
+    }
+
+    public function addStock(Stock $stock): self
+    {
+        if (!$this->stocks->contains($stock)) {
+            $this->stocks[] = $stock;
+            $stock->setIsin($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStock(Stock $stock): self
+    {
+        if ($this->stocks->removeElement($stock)) {
+            // set the owning side to null (unless already changed)
+            if ($stock->getIsin() === $this) {
+                $stock->setIsin(null);
             }
         }
 
