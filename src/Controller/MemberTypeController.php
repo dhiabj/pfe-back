@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
@@ -28,19 +30,33 @@ class MemberTypeController extends AbstractController
     public function getAllMemberTypes(): Response
     {
         $membertypes = $this->em->getRepository(MemberType::class)->findAll();
+        $defaultContext = [
+            AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER =>
+            function ($membertypes) {
+                return $membertypes->getId();
+            },
+            AbstractNormalizer::IGNORED_ATTRIBUTES => [
+                '__initializer__', '__isInitialized__',
+                '__cloner__', 'members'
+            ]
+        ];
         $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
+        $normalizers = [new DateTimeNormalizer(), new ObjectNormalizer(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            $defaultContext
+        )];
         $serializer = new Serializer($normalizers, $encoders);
-        $jsonObject = $serializer->serialize($membertypes, 'json', [
-            'circular_reference_handler' => function ($object) {
-                return $object->getId();
-            }
-        ]);
+        $jsonObject = $serializer->serialize($membertypes, 'json');
         return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
     }
 
     /**
-     * @Route("/api/add-member-type", name="app_add_member-type", methods={"POST"})
+     * @Route("/api/add-member-type", name="app_add_member_type", methods={"POST"})
      */
     public function addMemberType(Request $request)
     {
@@ -76,15 +92,13 @@ class MemberTypeController extends AbstractController
     }
 
     /**
-     * @Route("/api/delete-member-type/{id}", name="app_delete_member-type", methods={"DELETE"})
+     * @Route("/api/delete-member-type/{id}", name="app_delete_member_type", methods={"DELETE"})
      */
     public function deleteMemberType(Request $request)
     {
         $membertype = $this->em->getRepository(MemberType::class)->find($request->get('id'));
-        if ($membertype) {
-            $this->em->remove($membertype);
-            $this->em->flush();
-        }
+        $this->em->remove($membertype);
+        $this->em->flush();
         return new JsonResponse("Member Type deleted", 200);
     }
 }

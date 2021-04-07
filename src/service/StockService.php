@@ -5,6 +5,7 @@ namespace App\service;
 use App\Entity\AccountType;
 use App\Entity\Category;
 use App\Entity\Member;
+use App\Entity\MemberType;
 use App\Entity\Stock;
 use App\Entity\Value;
 use DateTime;
@@ -21,33 +22,48 @@ class StockService
 
     public function AddStock($line, $i)
     {
-        $member = $this->em->getRepository(Member::class)->find(substr($line[$i], 0, 3));
-        $value = $this->em->getRepository(Value::class)->find(substr($line[$i], 3, 12));
-        $accountType = $this->em->getRepository(AccountType::class)->find(substr($line[$i], 15, 2));
-        $category = $this->em->getRepository(Category::class)->find(substr($line[$i], 17, 3));
+        $mt = "-";
+        $mtype = $this->em->getRepository(MemberType::class)->findOneBy(['MemberTypeCode' => $mt]);
+        if (!$mtype) {
+            $mtype = new MemberType();
+            $mtype->setMemberTypeCode($mt);
+            $this->em->persist($mtype);
+            $this->em->flush();
+        }
 
+        $mc = substr($line[$i], 0, 3);
+        $member = $this->em->getRepository(Member::class)->findOneBy(['MembershipCode' => $mc]);
         if (!$member) {
             $member = new Member();
-            $member->setMembershipCode(substr($line[$i], 0, 3));
+            $member->setMembershipCode($mc);
+            $member->setMemberType($mtype);
             $this->em->persist($member);
             $this->em->flush();
         }
+
+        $codeVal = substr($line[$i], 3, 12);
+        $value = $this->em->getRepository(Value::class)->findOneBy(['Isin' => $codeVal]);
         if (!$value) {
             $value = new Value();
-            $value->setIsin(substr($line[$i], 3, 12));
+            $value->setIsin($codeVal);
             $this->em->persist($value);
             $this->em->flush();
         }
+
+        $nc = substr($line[$i], 15, 2);
+        $accountType = $this->em->getRepository(AccountType::class)->findOneBy(['NatureCode' => $nc]);
         if (!$accountType) {
             $accountType = new AccountType();
-            $accountType->setNatureCode(substr($line[$i], 15, 2));
+            $accountType->setNatureCode($nc);
             $this->em->persist($accountType);
             $this->em->flush();
         }
 
+        $cc = substr($line[$i], 17, 3);
+        $category = $this->em->getRepository(Category::class)->findOneBy(['CategoryCode' => $cc]);
         if (!$category) {
             $category = new Category();
-            $category->setCategoryCode(substr($line[$i], 17, 3));
+            $category->setCategoryCode($cc);
             $this->em->persist($category);
             $this->em->flush();
         }

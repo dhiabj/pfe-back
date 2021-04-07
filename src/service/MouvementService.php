@@ -5,6 +5,7 @@ namespace App\service;
 use App\Entity\AccountType;
 use App\Entity\Category;
 use App\Entity\Member;
+use App\Entity\MemberType;
 use App\Entity\Mouvement;
 use App\Entity\Operation;
 use App\Entity\Value;
@@ -42,9 +43,20 @@ class MouvementService
 
         $dymc = substr($line[$i], 30, 3);
         $deliveryMember = $this->em->getRepository(Member::class)->findOneBy(['MembershipCode' => $dymc]);
+
+        $mt = "-";
+        $mtype = $this->em->getRepository(MemberType::class)->findOneBy(['MemberTypeCode' => $mt]);
+        if (!$mtype) {
+            $mtype = new MemberType();
+            $mtype->setMemberTypeCode($mt);
+            $this->em->persist($mtype);
+            $this->em->flush();
+        }
+
         if (!$deliveryMember) {
             $deliveryMember = new Member();
             $deliveryMember->setMembershipCode($dymc);
+            $deliveryMember->setMemberType($mtype);
             $this->em->persist($deliveryMember);
             $this->em->flush();
         }
@@ -63,6 +75,7 @@ class MouvementService
         if (!$deliveredMember) {
             $deliveredMember = new Member();
             $deliveredMember->setMembershipCode($dedmc);
+            $deliveredMember->setMemberType($mtype);
             $this->em->persist($deliveredMember);
             $this->em->flush();
         }

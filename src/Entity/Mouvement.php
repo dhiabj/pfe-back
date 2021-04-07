@@ -29,43 +29,43 @@ class Mouvement
 
     /**
      * @ORM\ManyToOne(targetEntity=Operation::class, inversedBy="mouvements")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $OperationCode;
 
     /**
      * @ORM\ManyToOne(targetEntity=Member::class, inversedBy="mouvements")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $DeliveryMemberCode;
 
     /**
      * @ORM\ManyToOne(targetEntity=AccountType::class, inversedBy="mouvements")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $DeliveryAccountType;
 
     /**
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="mouvements")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $DeliveryCategoryCredit;
 
     /**
      * @ORM\ManyToOne(targetEntity=Member::class, inversedBy="mouvementl")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $DeliveredMemberCode;
 
     /**
      * @ORM\ManyToOne(targetEntity=AccountType::class, inversedBy="mouvementl")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $DeliveredAccountType;
 
     /**
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="mouvementl")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $DeliveredCategoryCredit;
 
@@ -81,7 +81,7 @@ class Mouvement
 
     /**
      * @ORM\ManyToOne(targetEntity=Value::class, inversedBy="mouvements")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $Isin;
 

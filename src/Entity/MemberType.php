@@ -35,7 +35,7 @@ class MemberType
     private $UpdateDate;
 
     /**
-     * @ORM\OneToMany(targetEntity=Member::class, mappedBy="MemberType", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Member::class, mappedBy="MemberType")
      */
     private $members;
 

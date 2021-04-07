@@ -37,7 +37,7 @@ class Member
 
     /**
      * @ORM\ManyToOne(targetEntity=MemberType::class, inversedBy="members")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $MemberType;
 

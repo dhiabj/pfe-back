@@ -9,6 +9,7 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -75,7 +76,7 @@ class MouvementController extends AbstractController
         $mvtable->setStockExchangeDate($StockExchangeDate->setDate(substr($line[1], 18, 4), substr($line[1], 16, 2), substr($line[1], 14, 2)));
         $this->em->persist($mvtable);
         $this->em->flush();
-        return $this->json('file uploded in database');
+        return new JsonResponse("file uploded in database", 200);
     }
 
     /**
@@ -84,12 +85,8 @@ class MouvementController extends AbstractController
     public function deleteMouvement(Request $request)
     {
         $mvtable = $this->em->getRepository(MvtUploadTable::class)->find($request->get('id'));
-        if ($mvtable) {
-            $this->em->remove($mvtable);
-            $this->em->flush();
-            return $this->json('file deleted successfully');
-        } else {
-            return $this->json('file not found');
-        }
+        $this->em->remove($mvtable);
+        $this->em->flush();
+        return new JsonResponse("file deleted successfully", 200);
     }
 }

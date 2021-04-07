@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
@@ -29,14 +31,30 @@ class MemberController extends AbstractController
     public function getAllMembers(): Response
     {
         $members = $this->em->getRepository(Member::class)->findAll();
+
+        $defaultContext = [
+
+            AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER =>
+            function ($members) {
+                return $members->getId();
+            },
+            AbstractNormalizer::IGNORED_ATTRIBUTES => [
+                '__initializer__', '__isInitialized__',
+                '__cloner__', 'members', 'mouvements', 'mouvementl', 'stocks'
+            ]
+        ];
         $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
+        $normalizers = [new DateTimeNormalizer(), new ObjectNormalizer(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            $defaultContext
+        )];
         $serializer = new Serializer($normalizers, $encoders);
-        $jsonObject = $serializer->serialize($members, 'json', [
-            'circular_reference_handler' => function ($object) {
-                return $object->getId();
-            }
-        ]);
+        $jsonObject = $serializer->serialize($members, 'json');
         return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
     }
 
@@ -86,10 +104,8 @@ class MemberController extends AbstractController
     public function deleteMember(Request $request)
     {
         $member = $this->em->getRepository(Member::class)->find($request->get('id'));
-        if ($member) {
-            $this->em->remove($member);
-            $this->em->flush();
-        }
+        $this->em->remove($member);
+        $this->em->flush();
         return new JsonResponse("Member deleted", 200);
     }
 }

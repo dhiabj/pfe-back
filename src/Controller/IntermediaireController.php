@@ -2,12 +2,18 @@
 
 namespace App\Controller;
 
+use App\Entity\IntermAccount;
 use App\Entity\Intermediaire;
+use App\Entity\Market;
+use App\Entity\Profit;
+use App\Entity\Reglement;
+use App\Entity\Value;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use SplFileObject;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -38,28 +44,88 @@ class IntermediaireController extends AbstractController
                 continue;
             }
             $TransactionDate = new DateTime();
+
+            if (array_key_exists(3, $row)) {
+                $codeVal = $row[3];
+            }
+
+            $value = $this->em->getRepository(Value::class)->findOneBy(['Isin' => $codeVal]);
+            if (!$value) {
+                $value = new Value();
+                $value->setIsin($codeVal);
+                $this->em->persist($value);
+                $this->em->flush();
+            }
+
+            if (array_key_exists(6, $row)) {
+                $marketCode = $row[6];
+            }
+
+            $market = $this->em->getRepository(Market::class)->findOneBy(['MarketCode' => $marketCode]);
+            if (!$market) {
+                $market = new Market();
+                $market->setMarketCode($marketCode);
+                $this->em->persist($market);
+                $this->em->flush();
+            }
+
+            if (array_key_exists(7, $row)) {
+                $profitCode = $row[7];
+            }
+
+            $profit = $this->em->getRepository(Profit::class)->findOneBy(['ProfitCode' => $profitCode]);
+            if (!$profit) {
+                $profit = new Profit();
+                $profit->setProfitCode($profitCode);
+                $this->em->persist($profit);
+                $this->em->flush();
+            }
+
+            if (array_key_exists(9, $row)) {
+                $accountCode = $row[9];
+            }
+
+            $account = $this->em->getRepository(IntermAccount::class)->findOneBy(['AccountCode' => $accountCode]);
+            if (!$account) {
+                $account = new IntermAccount();
+                $account->setAccountCode($accountCode);
+                $this->em->persist($account);
+                $this->em->flush();
+            }
+
+            if (array_key_exists(14, $row)) {
+                $reglementCode = $row[14];
+            }
+
+            $reglement = $this->em->getRepository(Reglement::class)->findOneBy(['ReglementCode' => $reglementCode]);
+            if (!$reglement) {
+                $reglement = new Reglement();
+                $reglement->setReglementCode($reglementCode);
+                $this->em->persist($reglement);
+                $this->em->flush();
+            }
+
             $intermediaire = (new Intermediaire())
-                ->setTransactionDate($row[0] !== null ? $TransactionDate->setDate(intval(substr($row[0], 6, 4)), intval(substr($row[0], 3, 2)), intval(substr($row[0], 0, 2))) : null)
-                ->setContractNumber(array_key_exists(1, $row) ? intval($row[1]) : 0)
+                ->setTransactionDate($row[0] !== null ? $TransactionDate->setDate((substr($row[0], 6, 4)), (substr($row[0], 3, 2)), (substr($row[0], 0, 2))) : null)
+                ->setContractNumber(array_key_exists(1, $row) ? $row[1] : "")
                 ->setDirection(array_key_exists(2, $row) ? $row[2] : "")
-                ->setValueCode(array_key_exists(3, $row) ? $row[3] : "")
+                ->setValueCode($value)
                 ->setValueLabel(array_key_exists(4, $row) ? $row[4] : "")
-                ->setValueCharacteristic(array_key_exists(5, $row) ? intval($row[5]) : 0)
-                ->setMarket(array_key_exists(6, $row) ? intval($row[6]) : 0)
-                ->setProfit(array_key_exists(7, $row) ? intval($row[7]) : 0)
+                ->setValueCharacteristic(array_key_exists(5, $row) ? $row[5] : "")
+                ->setMarket($market)
+                ->setProfit($profit)
                 ->setClient(array_key_exists(8, $row) ? $row[8] : "")
-                ->setAccountType(array_key_exists(9, $row) ? intval($row[9]) : 0)
+                ->setAccountType($account)
                 ->setCountry(array_key_exists(10, $row) ? $row[10] : "")
-                ->setQuantity(array_key_exists(11, $row) ? intval($row[11]) : 0)
-                ->setCours(array_key_exists(12, $row) ? intval($row[12]) : 0)
-                ->setIntermediaireCode(array_key_exists(13, $row) ? intval($row[13]) : 0)
-                ->setReglement(array_key_exists(14, $row) ? intval($row[14]) : 0)
-                ->setCommission(array_key_exists(15, $row) ? intval($row[15]) : 0);
+                ->setQuantity(array_key_exists(11, $row) ? $row[11] : "")
+                ->setCours(array_key_exists(12, $row) ? floatval($row[12]) : "")
+                ->setIntermediaireCode(array_key_exists(13, $row) ? $row[13] : "")
+                ->setReglement($reglement)
+                ->setCommission(array_key_exists(15, $row) ? floatval($row[15]) : "");
             $this->em->persist($intermediaire);
         }
 
         $this->em->flush();
-
-        return $this->json('file uploded in database');
+        return new JsonResponse("file uploded in database", 200);
     }
 }

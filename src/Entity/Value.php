@@ -69,10 +69,16 @@ class Value
      */
     private $stocks;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Intermediaire::class, mappedBy="ValueCode")
+     */
+    private $intermediaires;
+
     public function __construct()
     {
         $this->mouvements = new ArrayCollection();
         $this->stocks = new ArrayCollection();
+        $this->intermediaires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -230,6 +236,36 @@ class Value
             // set the owning side to null (unless already changed)
             if ($stock->getIsin() === $this) {
                 $stock->setIsin(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Intermediaire[]
+     */
+    public function getIntermediaires(): Collection
+    {
+        return $this->intermediaires;
+    }
+
+    public function addIntermediaire(Intermediaire $intermediaire): self
+    {
+        if (!$this->intermediaires->contains($intermediaire)) {
+            $this->intermediaires[] = $intermediaire;
+            $intermediaire->setValueCode($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIntermediaire(Intermediaire $intermediaire): self
+    {
+        if ($this->intermediaires->removeElement($intermediaire)) {
+            // set the owning side to null (unless already changed)
+            if ($intermediaire->getValueCode() === $this) {
+                $intermediaire->setValueCode(null);
             }
         }
 

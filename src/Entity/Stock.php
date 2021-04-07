@@ -39,25 +39,25 @@ class Stock
 
     /**
      * @ORM\ManyToOne(targetEntity=Member::class, inversedBy="stocks")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $MembershipCode;
 
     /**
      * @ORM\ManyToOne(targetEntity=AccountType::class, inversedBy="stocks")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $NatureCode;
 
     /**
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="stocks")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $CategoryCode;
 
     /**
      * @ORM\ManyToOne(targetEntity=Value::class, inversedBy="stocks")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $Isin;
 
