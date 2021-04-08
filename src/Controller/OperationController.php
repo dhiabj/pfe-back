@@ -24,6 +24,7 @@ class OperationController extends AbstractController
     {
         $this->em = $em;
     }
+
     /**
      * @Route("/api/operations", name="app_operations_all", methods={"GET"})
      */
@@ -60,16 +61,12 @@ class OperationController extends AbstractController
      */
     public function addOperation(Request $request)
     {
-
         $operationRequest = json_decode($request->getContent());
         $operation = new Operation();
         $operation->setOperationCode($operationRequest->OperationCode)
             ->setOperationLabel($operationRequest->OperationLabel);
-
-
         $this->em->persist($operation);
         $this->em->flush();
-
         return new JsonResponse("Operation created", 200);
     }
 
@@ -78,16 +75,13 @@ class OperationController extends AbstractController
      */
     public function editOperation(Request $request)
     {
-
         $operationRequest = json_decode($request->getContent());
-
         $operation = $this->em->getRepository(Operation::class)->find($request->get('id'));
         $operation->setOperationCode($operationRequest->OperationCode)
             ->setOperationLabel($operationRequest->OperationLabel)
             ->setUpdateDate(new DateTime());
         $this->em->persist($operation);
         $this->em->flush();
-
         return new JsonResponse("Operation updated", 200);
     }
 

@@ -31,9 +31,7 @@ class MemberController extends AbstractController
     public function getAllMembers(): Response
     {
         $members = $this->em->getRepository(Member::class)->findAll();
-
         $defaultContext = [
-
             AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER =>
             function ($members) {
                 return $members->getId();
@@ -63,18 +61,14 @@ class MemberController extends AbstractController
      */
     public function addMember(Request $request)
     {
-
         $memberRequest = json_decode($request->getContent());
         $membertype = $this->em->getRepository(MemberType::class)->find($memberRequest->MemberTypeId);
         $member = new Member();
         $member->setMemberType($membertype)
             ->setMembershipCode($memberRequest->MembershipCode)
             ->setMemberName($memberRequest->MemberName);
-
-
         $this->em->persist($member);
         $this->em->flush();
-
         return new JsonResponse("Member created", 200);
     }
 
@@ -83,9 +77,7 @@ class MemberController extends AbstractController
      */
     public function editMember(Request $request)
     {
-
         $memberRequest = json_decode($request->getContent());
-
         $member = $this->em->getRepository(Member::class)->find($request->get('id'));
         $membertype = $this->em->getRepository(MemberType::class)->find($memberRequest->MemberTypeId);
         $member->setMembershipCode($memberRequest->MembershipCode)
@@ -94,7 +86,6 @@ class MemberController extends AbstractController
             ->setUpdateDate(new DateTime());
         $this->em->persist($member);
         $this->em->flush();
-
         return new JsonResponse("Member updated", 200);
     }
 

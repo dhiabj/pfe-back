@@ -10,6 +10,7 @@ use App\Entity\Reglement;
 use App\Entity\Value;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use LimitIterator;
 use SplFileObject;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,25 +31,19 @@ class IntermediaireController extends AbstractController
     public function fillAllIntermediaires(Request $request): Response
     {
         $file = $request->files->get('intermediaire');
-        $fileName = md5(uniqid()) . '.' . $file->getClientOriginalExtension();
+        /*$fileName = md5(uniqid()) . '.' . $file->getClientOriginalExtension();
         $line = file_get_contents($file);
         $fileCSV = fopen("csv/" . $fileName, "w");
         fwrite($fileCSV, $line);
         fclose($fileCSV);
-        chmod("csv/" . $fileName, 0644);
-        $file = new SplFileObject("csv/" . $fileName);
-        $file->setFlags(SplFileObject::READ_CSV);
+        chmod("csv/" . $fileName, 0644);*/
+        $file = new SplFileObject($file);
+        $file->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY | SplFileObject::READ_AHEAD  | SplFileObject::DROP_NEW_LINE);
         $file->setCsvControl(';', '"', '\\');
-        foreach ($file as $row) {
-            if ($row[0] === 'Date' || $row[0] === 'DATETRANSACTION' || $row[0] === 'date') {
-                continue;
-            }
+        $it = new LimitIterator($file, 1);
+        foreach ($it as $row) {
             $TransactionDate = new DateTime();
-
-            if (array_key_exists(3, $row)) {
-                $codeVal = $row[3];
-            }
-
+            $codeVal = $row[3];
             $value = $this->em->getRepository(Value::class)->findOneBy(['Isin' => $codeVal]);
             if (!$value) {
                 $value = new Value();
@@ -56,11 +51,7 @@ class IntermediaireController extends AbstractController
                 $this->em->persist($value);
                 $this->em->flush();
             }
-
-            if (array_key_exists(6, $row)) {
-                $marketCode = $row[6];
-            }
-
+            $marketCode = $row[6];
             $market = $this->em->getRepository(Market::class)->findOneBy(['MarketCode' => $marketCode]);
             if (!$market) {
                 $market = new Market();
@@ -68,11 +59,7 @@ class IntermediaireController extends AbstractController
                 $this->em->persist($market);
                 $this->em->flush();
             }
-
-            if (array_key_exists(7, $row)) {
-                $profitCode = $row[7];
-            }
-
+            $profitCode = $row[7];
             $profit = $this->em->getRepository(Profit::class)->findOneBy(['ProfitCode' => $profitCode]);
             if (!$profit) {
                 $profit = new Profit();
@@ -80,11 +67,7 @@ class IntermediaireController extends AbstractController
                 $this->em->persist($profit);
                 $this->em->flush();
             }
-
-            if (array_key_exists(9, $row)) {
-                $accountCode = $row[9];
-            }
-
+            $accountCode = $row[9];
             $account = $this->em->getRepository(IntermAccount::class)->findOneBy(['AccountCode' => $accountCode]);
             if (!$account) {
                 $account = new IntermAccount();
@@ -92,11 +75,7 @@ class IntermediaireController extends AbstractController
                 $this->em->persist($account);
                 $this->em->flush();
             }
-
-            if (array_key_exists(14, $row)) {
-                $reglementCode = $row[14];
-            }
-
+            $reglementCode = $row[14];
             $reglement = $this->em->getRepository(Reglement::class)->findOneBy(['ReglementCode' => $reglementCode]);
             if (!$reglement) {
                 $reglement = new Reglement();
@@ -104,27 +83,25 @@ class IntermediaireController extends AbstractController
                 $this->em->persist($reglement);
                 $this->em->flush();
             }
-
             $intermediaire = (new Intermediaire())
-                ->setTransactionDate($row[0] !== null ? $TransactionDate->setDate((substr($row[0], 6, 4)), (substr($row[0], 3, 2)), (substr($row[0], 0, 2))) : null)
-                ->setContractNumber(array_key_exists(1, $row) ? $row[1] : "")
-                ->setDirection(array_key_exists(2, $row) ? $row[2] : "")
+                ->setTransactionDate($TransactionDate->setDate((substr($row[0], 6, 4)), (substr($row[0], 3, 2)), (substr($row[0], 0, 2))))
+                ->setContractNumber($row[1])
+                ->setDirection($row[2])
                 ->setValueCode($value)
-                ->setValueLabel(array_key_exists(4, $row) ? $row[4] : "")
-                ->setValueCharacteristic(array_key_exists(5, $row) ? $row[5] : "")
+                ->setValueLabel($row[4])
+                ->setValueCharacteristic($row[5])
                 ->setMarket($market)
                 ->setProfit($profit)
-                ->setClient(array_key_exists(8, $row) ? $row[8] : "")
+                ->setClient($row[8])
                 ->setAccountType($account)
-                ->setCountry(array_key_exists(10, $row) ? $row[10] : "")
-                ->setQuantity(array_key_exists(11, $row) ? $row[11] : "")
-                ->setCours(array_key_exists(12, $row) ? floatval($row[12]) : "")
-                ->setIntermediaireCode(array_key_exists(13, $row) ? $row[13] : "")
+                ->setCountry($row[10])
+                ->setQuantity($row[11])
+                ->setCours(floatval($row[12]))
+                ->setIntermediaireCode($row[13])
                 ->setReglement($reglement)
-                ->setCommission(array_key_exists(15, $row) ? floatval($row[15]) : "");
+                ->setCommission(floatval($row[15]));
             $this->em->persist($intermediaire);
         }
-
         $this->em->flush();
         return new JsonResponse("file uploded in database", 200);
     }

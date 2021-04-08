@@ -16,7 +16,6 @@ class UserController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
         $user = $em->getRepository(User::class)->find($this->getUser());
-
         return $this->json($user);
     }
 }

@@ -60,16 +60,12 @@ class CategoryController extends AbstractController
      */
     public function addCategory(Request $request)
     {
-
         $categoryRequest = json_decode($request->getContent());
         $category = new Category();
         $category->setCategoryCode($categoryRequest->CategoryCode)
             ->setCategoryLabel($categoryRequest->CategoryLabel);
-
-
         $this->em->persist($category);
         $this->em->flush();
-
         return new JsonResponse("Category created", 200);
     }
 
@@ -78,15 +74,12 @@ class CategoryController extends AbstractController
      */
     public function editCategory(Request $request)
     {
-
         $categoryRequest = json_decode($request->getContent());
-
         $category = $this->em->getRepository(Category::class)->find($request->get('id'));
         $category->setCategoryCode($categoryRequest->CategoryCode)
             ->setCategoryLabel($categoryRequest->CategoryLabel);
         $this->em->persist($category);
         $this->em->flush();
-
         return new JsonResponse("Category updated", 200);
     }
 

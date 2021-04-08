@@ -24,6 +24,7 @@ class MemberTypeController extends AbstractController
     {
         $this->em = $em;
     }
+
     /**
      * @Route("/api/member-types", name="app_member_types_all", methods={"GET"})
      */
@@ -60,16 +61,12 @@ class MemberTypeController extends AbstractController
      */
     public function addMemberType(Request $request)
     {
-
         $membertypeRequest = json_decode($request->getContent());
         $membertype = new MemberType();
         $membertype->setMemberTypeCode($membertypeRequest->MemberTypeCode)
             ->setMemberTypeLabel($membertypeRequest->MemberTypeLabel);
-
-
         $this->em->persist($membertype);
         $this->em->flush();
-
         return new JsonResponse("Member Type created", 200);
     }
 
@@ -78,16 +75,13 @@ class MemberTypeController extends AbstractController
      */
     public function editMemberType(Request $request)
     {
-
         $membertypeRequest = json_decode($request->getContent());
-
         $membertype = $this->em->getRepository(MemberType::class)->find($request->get('id'));
         $membertype->setMemberTypeCode($membertypeRequest->MemberTypeCode)
             ->setMemberTypeLabel($membertypeRequest->MemberTypeLabel)
             ->setUpdateDate(new DateTime());
         $this->em->persist($membertype);
         $this->em->flush();
-
         return new JsonResponse("Member Type updated", 200);
     }
 

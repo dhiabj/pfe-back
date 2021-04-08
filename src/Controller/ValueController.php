@@ -37,7 +37,7 @@ class ValueController extends AbstractController
             },
             AbstractNormalizer::IGNORED_ATTRIBUTES => [
                 '__initializer__', '__isInitialized__',
-                '__cloner__', 'mouvements', 'mouvementl', 'stocks'
+                '__cloner__', 'mouvements', 'mouvementl', 'stocks', 'intermediaires'
             ]
         ];
         $encoders = [new JsonEncoder()];
@@ -60,7 +60,6 @@ class ValueController extends AbstractController
      */
     public function addValue(Request $request)
     {
-
         $valueRequest = json_decode($request->getContent());
         $value = new Value();
         $value->setIsin($valueRequest->ValueCode)
@@ -71,11 +70,8 @@ class ValueController extends AbstractController
             ->setNbCodFlott($valueRequest->NbCodFlott)
             ->setGroupCotation($valueRequest->GroupCotation)
             ->setSuperSecteur($valueRequest->SuperSecteur);
-
-
         $this->em->persist($value);
         $this->em->flush();
-
         return new JsonResponse("Value created", 200);
     }
 
@@ -84,9 +80,7 @@ class ValueController extends AbstractController
      */
     public function editValue(Request $request)
     {
-
         $valueRequest = json_decode($request->getContent());
-
         $value = $this->em->getRepository(Value::class)->find($request->get('id'));
         $value->setIsin($valueRequest->ValueCode)
             ->setValueLabel($valueRequest->ValueLabel)
@@ -98,7 +92,6 @@ class ValueController extends AbstractController
             ->setSuperSecteur($valueRequest->SuperSecteur);
         $this->em->persist($value);
         $this->em->flush();
-
         return new JsonResponse("Value updated", 200);
     }
 

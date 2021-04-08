@@ -17,11 +17,13 @@ class StockController extends AbstractController
 {
     private $em;
     private $stockService;
+
     public function __construct(EntityManagerInterface $em, StockService $stockService)
     {
         $this->em = $em;
         $this->stockService = $stockService;
     }
+
     /**
      * @Route("/api/stocks", name="app_stock_all", methods={"GET"})
      */
@@ -35,7 +37,6 @@ class StockController extends AbstractController
             $search->accounting_date,
             $search->stock_exchange_date
         );
-
         return $this->json($stocks);
     }
 
@@ -45,9 +46,9 @@ class StockController extends AbstractController
     public function getStockUploads(): Response
     {
         $stcktable = $this->em->getRepository(StockUploadTable::class)->findAll();
-
         return $this->json($stcktable);
     }
+
     /**
      * @Route("/api/stocks-fill", name="app_stocks_fill", methods={"POST"})
      */
@@ -55,13 +56,7 @@ class StockController extends AbstractController
     {
         $file = $request->files->get('stocks');
         $line = file($file);
-        /*$fileCSV = fopen("csv/" . $file->getFilename() . ".txt", "w");
-        fwrite($fileCSV, $line);
-        fclose($fileCSV);
-        chmod("csv/" . $file->getFilename() . ".txt", 0644);*/
-
         for ($i = 1; $i < sizeof($line) - 1; $i++) {
-            //dump(strlen($line[$i]));
             $this->stockService->AddStock($line, $i);
         }
         $this->em->flush();

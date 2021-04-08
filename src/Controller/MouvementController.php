@@ -54,13 +54,6 @@ class MouvementController extends AbstractController
     {
         $file = $request->files->get('mouvements');
         $line = file($file);
-
-        //dd($file);
-        /*$fileCSV = fopen("csv/" . $file->getFilename() . ".txt", "w");
-        fwrite($fileCSV, $line);
-        fclose($fileCSV);
-        chmod("csv/" . $file->getFilename() . ".txt", 0644);*/
-
         for ($i = 1; $i < sizeof($line) - 1; $i++) {
             $this->mouvementService->AddMouvement($line, $i);
         }

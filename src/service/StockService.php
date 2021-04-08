@@ -30,7 +30,6 @@ class StockService
             $this->em->persist($mtype);
             $this->em->flush();
         }
-
         $mc = substr($line[$i], 0, 3);
         $member = $this->em->getRepository(Member::class)->findOneBy(['MembershipCode' => $mc]);
         if (!$member) {
@@ -40,7 +39,6 @@ class StockService
             $this->em->persist($member);
             $this->em->flush();
         }
-
         $codeVal = substr($line[$i], 3, 12);
         $value = $this->em->getRepository(Value::class)->findOneBy(['Isin' => $codeVal]);
         if (!$value) {
@@ -49,7 +47,6 @@ class StockService
             $this->em->persist($value);
             $this->em->flush();
         }
-
         $nc = substr($line[$i], 15, 2);
         $accountType = $this->em->getRepository(AccountType::class)->findOneBy(['NatureCode' => $nc]);
         if (!$accountType) {
@@ -58,7 +55,6 @@ class StockService
             $this->em->persist($accountType);
             $this->em->flush();
         }
-
         $cc = substr($line[$i], 17, 3);
         $category = $this->em->getRepository(Category::class)->findOneBy(['CategoryCode' => $cc]);
         if (!$category) {
@@ -67,7 +63,6 @@ class StockService
             $this->em->persist($category);
             $this->em->flush();
         }
-
         $stock = new Stock();
         $stock->setMembershipCode($member);
         $stock->setIsin($value);
