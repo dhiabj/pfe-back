@@ -24,6 +24,7 @@ class CategoryController extends AbstractController
     {
         $this->em = $em;
     }
+
     /**
      * @Route("/api/categories", name="app_categories_all", methods={"GET"})
      */

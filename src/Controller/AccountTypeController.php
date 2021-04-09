@@ -24,6 +24,7 @@ class AccountTypeController extends AbstractController
     {
         $this->em = $em;
     }
+
     /**
      * @Route("/api/account-types", name="app_account_types_all", methods={"GET"})
      */
@@ -60,16 +61,12 @@ class AccountTypeController extends AbstractController
      */
     public function addAccountType(Request $request)
     {
-
         $accounttypeRequest = json_decode($request->getContent());
         $accounttype = new AccountType();
         $accounttype->setNatureCode($accounttypeRequest->AccountTypeCode)
             ->setNatureAccountLabel($accounttypeRequest->AccountTypeLabel);
-
-
         $this->em->persist($accounttype);
         $this->em->flush();
-
         return new JsonResponse("Account Type created", 200);
     }
 
@@ -78,14 +75,12 @@ class AccountTypeController extends AbstractController
      */
     public function editAccountType(Request $request)
     {
-
         $accounttypeRequest = json_decode($request->getContent());
         $accounttype = $this->em->getRepository(AccountType::class)->find($request->get('id'));
         $accounttype->setNatureCode($accounttypeRequest->AccountTypeCode)
             ->setNatureAccountLabel($accounttypeRequest->AccountTypeLabel);
         $this->em->persist($accounttype);
         $this->em->flush();
-
         return new JsonResponse("Account Type updated", 200);
     }
 

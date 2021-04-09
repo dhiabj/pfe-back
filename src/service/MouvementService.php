@@ -5,7 +5,6 @@ namespace App\service;
 use App\Entity\AccountType;
 use App\Entity\Category;
 use App\Entity\Member;
-use App\Entity\MemberType;
 use App\Entity\Mouvement;
 use App\Entity\Operation;
 use App\Entity\Value;
@@ -31,7 +30,7 @@ class MouvementService
             $this->em->persist($operation);
             $this->em->flush();
         }
-        $codeVal = substr($line[$i], 2, 12);
+        $codeVal = substr($line[$i], 7, 6);
         $value = $this->em->getRepository(Value::class)->findOneBy(['Isin' => $codeVal]);
         if (!$value) {
             $value = new Value();
@@ -41,18 +40,9 @@ class MouvementService
         }
         $dymc = substr($line[$i], 30, 3);
         $deliveryMember = $this->em->getRepository(Member::class)->findOneBy(['MembershipCode' => $dymc]);
-        $mt = "-";
-        $mtype = $this->em->getRepository(MemberType::class)->findOneBy(['MemberTypeCode' => $mt]);
-        if (!$mtype) {
-            $mtype = new MemberType();
-            $mtype->setMemberTypeCode($mt);
-            $this->em->persist($mtype);
-            $this->em->flush();
-        }
         if (!$deliveryMember) {
             $deliveryMember = new Member();
             $deliveryMember->setMembershipCode($dymc);
-            $deliveryMember->setMemberType($mtype);
             $this->em->persist($deliveryMember);
             $this->em->flush();
         }
@@ -64,12 +54,19 @@ class MouvementService
             $this->em->persist($deliveryAccount);
             $this->em->flush();
         }
+        $dycc = substr($line[$i], 35, 3);
+        $deliveryCategory = $this->em->getRepository(Category::class)->findOneBy(['CategoryCode' => $dycc]);
+        if (!$deliveryCategory) {
+            $deliveryCategory = new Category();
+            $deliveryCategory->setCategoryCode($dycc);
+            $this->em->persist($deliveryCategory);
+            $this->em->flush();
+        }
         $dedmc = substr($line[$i], 38, 3);
         $deliveredMember = $this->em->getRepository(Member::class)->findOneBy(['MembershipCode' => $dedmc]);
         if (!$deliveredMember) {
             $deliveredMember = new Member();
             $deliveredMember->setMembershipCode($dedmc);
-            $deliveredMember->setMemberType($mtype);
             $this->em->persist($deliveredMember);
             $this->em->flush();
         }
@@ -87,14 +84,6 @@ class MouvementService
             $deliveredCategory = new Category();
             $deliveredCategory->setCategoryCode($dedcc);
             $this->em->persist($deliveredCategory);
-            $this->em->flush();
-        }
-        $dycc = substr($line[$i], 35, 3);
-        $deliveryCategory = $this->em->getRepository(Category::class)->findOneBy(['CategoryCode' => $dycc]);
-        if (!$deliveryCategory) {
-            $deliveryCategory = new Category();
-            $deliveryCategory->setCategoryCode($dycc);
-            $this->em->persist($deliveryCategory);
             $this->em->flush();
         }
         $mouvement = new Mouvement();

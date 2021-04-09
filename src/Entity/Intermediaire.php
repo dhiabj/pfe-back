@@ -34,7 +34,7 @@ class Intermediaire
 
     /**
      * @ORM\ManyToOne(targetEntity=Value::class, inversedBy="intermediaires")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $ValueCode;
 
@@ -50,13 +50,13 @@ class Intermediaire
 
     /**
      * @ORM\ManyToOne(targetEntity=Market::class, inversedBy="intermediaires")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $Market;
 
     /**
      * @ORM\ManyToOne(targetEntity=Profit::class, inversedBy="intermediaires")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $Profit;
 
@@ -67,7 +67,7 @@ class Intermediaire
 
     /**
      * @ORM\ManyToOne(targetEntity=IntermAccount::class, inversedBy="intermediaires")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $AccountType;
 
@@ -93,7 +93,7 @@ class Intermediaire
 
     /**
      * @ORM\ManyToOne(targetEntity=Reglement::class, inversedBy="intermediaires")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $Reglement;
 

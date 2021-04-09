@@ -21,10 +21,12 @@ use Symfony\Component\HttpFoundation\Response;
 class IntermediaireController extends AbstractController
 {
     private $em;
+
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }
+
     /**
      * @Route("/api/intermediaires-fill", name="app_intermediaires_fill", methods={"POST"})
      */

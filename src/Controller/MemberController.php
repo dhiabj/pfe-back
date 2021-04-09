@@ -25,6 +25,7 @@ class MemberController extends AbstractController
     {
         $this->em = $em;
     }
+
     /**
      * @Route("/api/members", name="app_members_all", methods={"GET"})
      */

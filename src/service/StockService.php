@@ -5,7 +5,6 @@ namespace App\service;
 use App\Entity\AccountType;
 use App\Entity\Category;
 use App\Entity\Member;
-use App\Entity\MemberType;
 use App\Entity\Stock;
 use App\Entity\Value;
 use DateTime;
@@ -22,24 +21,15 @@ class StockService
 
     public function AddStock($line, $i)
     {
-        $mt = "-";
-        $mtype = $this->em->getRepository(MemberType::class)->findOneBy(['MemberTypeCode' => $mt]);
-        if (!$mtype) {
-            $mtype = new MemberType();
-            $mtype->setMemberTypeCode($mt);
-            $this->em->persist($mtype);
-            $this->em->flush();
-        }
         $mc = substr($line[$i], 0, 3);
         $member = $this->em->getRepository(Member::class)->findOneBy(['MembershipCode' => $mc]);
         if (!$member) {
             $member = new Member();
             $member->setMembershipCode($mc);
-            $member->setMemberType($mtype);
             $this->em->persist($member);
             $this->em->flush();
         }
-        $codeVal = substr($line[$i], 3, 12);
+        $codeVal = substr($line[$i], 8, 6);
         $value = $this->em->getRepository(Value::class)->findOneBy(['Isin' => $codeVal]);
         if (!$value) {
             $value = new Value();

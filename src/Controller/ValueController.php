@@ -24,6 +24,7 @@ class ValueController extends AbstractController
     {
         $this->em = $em;
     }
+
     /**
      * @Route("/api/values", name="app_values_all", methods={"GET"})
      */

@@ -17,11 +17,13 @@ class MouvementController extends AbstractController
 {
     private $em;
     private $mouvementService;
+
     public function __construct(EntityManagerInterface $em, MouvementService $mouvementService)
     {
         $this->em = $em;
         $this->mouvementService = $mouvementService;
     }
+
     /**
      * @Route("/api/mouvements", name="app_mouvements_all", methods={"GET"})
      */

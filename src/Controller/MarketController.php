@@ -24,6 +24,7 @@ class MarketController extends AbstractController
     {
         $this->em = $em;
     }
+
     /**
      * @Route("/api/markets", name="app_markets_all", methods={"GET"})
      */
