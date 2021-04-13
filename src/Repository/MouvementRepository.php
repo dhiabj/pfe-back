@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Mouvement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -24,37 +25,78 @@ class MouvementRepository extends ServiceEntityRepository
     //  */
 
     public function findByAll(
-        $code_valeur,
-        $code_adherent,
-        $nature_compte,
-        $accounting_date,
-        $stock_exchange_date
+        $ValueCode,
+        $OperationCode,
+        $AccountingDate,
+        $StockExchangeDate,
+        $DeliveryMemberCode,
+        $DeliveredMemberCode
     ) {
         return $this->createQueryBuilder('m')
-            ->select('m.id,m.AccountingDate,m.Amount,m.StockExchangeDate,m.TitlesNumber,oc.OperationCode,
-            dymc.MembershipCode as DeliveryMemberCode,dedmc.MembershipCode as DeliveredMemberCode,
-            i.Isin,dyat.NatureCode as DeliveryAccountType,dedat.NatureCode as DeliveredAccountType,
-            dycc.CategoryCode as DeliveryCategoryCredit,dedcc.CategoryCode as DeliveredCategoryCredit')
             ->leftJoin('m.OperationCode', 'oc')
+            ->addSelect('PARTIAL oc.{id,OperationCode,OperationLabel}')
+            ->leftJoin('m.Isin', 'v')
+            ->addSelect('PARTIAL v.{id,Isin,ValueLabel}')
+            ->leftJoin('m.DeliveryMemberCode', 'dymc')
+            ->addSelect('PARTIAL dymc.{id,MembershipCode,MemberName}')
+            ->leftJoin('m.DeliveredMemberCode', 'dedmc')
+            ->addSelect('PARTIAL dedmc.{id,MembershipCode,MemberName}')
+            ->where('v.Isin like :ValueCode')
+            ->setParameter('ValueCode', '%' . $ValueCode . '%')
+            ->andWhere('oc.OperationCode like :OperationCode')
+            ->setParameter('OperationCode', '%' . $OperationCode . '%')
+            ->andWhere('dymc.MembershipCode like :DeliveryMemberCode')
+            ->setParameter('DeliveryMemberCode', '%' . $DeliveryMemberCode . '%')
+            ->andWhere('dedmc.MembershipCode like :DeliveredMemberCode')
+            ->setParameter('DeliveredMemberCode', '%' . $DeliveredMemberCode . '%')
+            ->andWhere('m.StockExchangeDate like :StockExchangeDate')
+            ->setParameter('StockExchangeDate', '%' . $StockExchangeDate . '%')
+            ->andWhere('m.AccountingDate like :AccountingDate')
+            ->setParameter('AccountingDate', '%' . $AccountingDate . '%')
+            ->getQuery()
+            ->getArrayResult(Query::HYDRATE_ARRAY);
+    }
+
+    public function findSum(
+        $ValueCode,
+        $OperationCode,
+        $AccountingDate,
+        $StockExchangeDate,
+        $DeliveryMemberCode,
+        $DeliveredMemberCode
+    ) {
+        return $this->createQueryBuilder('m')
+            ->leftJoin('m.OperationCode', 'oc')
+            ->leftJoin('m.Isin', 'v')
             ->leftJoin('m.DeliveryMemberCode', 'dymc')
             ->leftJoin('m.DeliveredMemberCode', 'dedmc')
-            ->leftJoin('m.Isin', 'i')
-            ->leftJoin('m.DeliveryAccountType', 'dyat')
-            ->leftJoin('m.DeliveredAccountType', 'dedat')
-            ->leftJoin('m.DeliveryCategoryCredit', 'dycc')
-            ->leftJoin('m.DeliveredCategoryCredit', 'dedcc')
-            ->where('i.Isin like :code_valeur')
-            ->setParameter('code_valeur', '%' . $code_valeur . '%')
-            ->andWhere("dymc.MembershipCode like '%" . $code_adherent . "%' OR dedmc.MembershipCode like '%" . $code_adherent . "%'")
-            ->andWhere("dyat.NatureCode like  '%" . $nature_compte . "%' OR dedat.NatureCode like '%" . $nature_compte . "%'")
-            ->andWhere('m.StockExchangeDate like :stock_exchange_date')
-            ->setParameter('stock_exchange_date', '%' . $stock_exchange_date . '%')
-            ->andWhere('m.AccountingDate like :accounting_date')
-            ->setParameter('accounting_date', '%' . $accounting_date . '%')
+            ->select('sum(m.Amount) as AmountTotal')
+            ->addSelect('sum(m.TitlesNumber) as TitlesTotal')
+            ->where('v.Isin like :ValueCode')
+            ->setParameter('ValueCode', '%' . $ValueCode . '%')
+            ->andWhere('oc.OperationCode like :OperationCode')
+            ->setParameter('OperationCode', '%' . $OperationCode . '%')
+            ->andWhere('dymc.MembershipCode like :DeliveryMemberCode')
+            ->setParameter('DeliveryMemberCode', '%' . $DeliveryMemberCode . '%')
+            ->andWhere('dedmc.MembershipCode like :DeliveredMemberCode')
+            ->setParameter('DeliveredMemberCode', '%' . $DeliveredMemberCode . '%')
+            ->andWhere('m.StockExchangeDate like :StockExchangeDate')
+            ->setParameter('StockExchangeDate', '%' . $StockExchangeDate . '%')
+            ->andWhere('m.AccountingDate like :AccountingDate')
+            ->setParameter('AccountingDate', '%' . $AccountingDate . '%')
             ->getQuery()
             ->getArrayResult();
     }
 
+    // ->addSelect('PARTIAL operation.{id,OperationCode,OperationLabel}')
+    // ->leftJoin('m.Isin', 'value')
+    // ->addSelect('PARTIAL value.{id,Isin,ValueLabel}')
+    // ->leftJoin('m.DeliveryMemberCode', 'member')
+    // ->addSelect('PARTIAL member.{id,MembershipCode}')
+    // ->leftJoin('m.DeliveredMemberCode', 'member1')
+    // ->addSelect('PARTIAL member1.{id,MembershipCode}')
+    // ->getQuery()
+    // ->getArrayResult(Query::HYDRATE_ARRAY);
 
     /*
     public function findOneBySomeField($value): ?Mouvement

@@ -31,13 +31,31 @@ class MouvementController extends AbstractController
     {
         $search = json_decode($request->get('search'));
         $mouvements = $this->em->getRepository(Mouvement::class)->findByAll(
-            $search->code_valeur,
-            $search->code_adherent,
-            $search->nature_compte,
-            $search->accounting_date,
-            $search->stock_exchange_date
+            $search->ValueCode,
+            $search->OperationCode,
+            $search->StockExchangeDate,
+            $search->AccountingDate,
+            $search->DeliveryMemberCode,
+            $search->DeliveredMemberCode,
         );
         return $this->json($mouvements);
+    }
+
+    /**
+     * @Route("/api/mouvement-sum", name="app_mouvement_sum_all", methods={"GET"})
+     */
+    public function getAllAmmounts(Request $request): Response
+    {
+        $search = json_decode($request->get('search'));
+        $sum = $this->em->getRepository(Mouvement::class)->findSum(
+            $search->ValueCode,
+            $search->OperationCode,
+            $search->StockExchangeDate,
+            $search->AccountingDate,
+            $search->DeliveryMemberCode,
+            $search->DeliveredMemberCode,
+        );
+        return $this->json($sum);
     }
 
     /**
