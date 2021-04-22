@@ -31,11 +31,11 @@ class StockController extends AbstractController
     {
         $search = json_decode($request->get('search'));
         $stocks = $this->em->getRepository(Stock::class)->findByAll(
-            $search->code_valeur,
-            $search->code_adherent,
-            $search->nature_compte,
-            $search->accounting_date,
-            $search->stock_exchange_date
+            $search->AccountingDate,
+            $search->StockExchangeDate,
+            $search->ValueCode,
+            $search->MembershipCode,
+            $search->NatureCode
         );
         return $this->json($stocks);
     }

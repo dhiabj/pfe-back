@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Stock;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -24,33 +25,42 @@ class StockRepository extends ServiceEntityRepository
     //  */
 
     public function findByAll(
-        $code_valeur,
-        $code_adherent,
-        $nature_compte,
-        $accounting_date,
-        $stock_exchange_date
+        $AccountingDate,
+        $StockExchangeDate,
+        $ValueCode,
+        $MembershipCode,
+        $NatureCode
     ) {
-        return $this->createQueryBuilder('m')
-            ->select('m.id,m.Quantity,m.Direction,m.StockExchangeDate,m.AccountingDate,
-            mc.MembershipCode,
-            i.Isin,n.NatureCode,
-            c.CategoryCode')
+        $qb = $this->createQueryBuilder('m')
             ->leftJoin('m.MembershipCode', 'mc')
-            ->leftJoin('m.Isin', 'i')
+            ->leftJoin('m.Isin', 'v')
             ->leftJoin('m.NatureCode', 'n')
             ->leftJoin('m.CategoryCode', 'c')
-            ->where('i.Isin like :code_valeur')
-            ->setParameter('code_valeur', '%' . $code_valeur . '%')
-            ->andWhere('mc.MembershipCode like :code_adherent')
-            ->setParameter('code_adherent', '%' . $code_adherent . '%')
-            ->andWhere('n.NatureCode like :nature_compte')
-            ->setParameter('nature_compte', '%' . $nature_compte . '%')
-            ->andWhere('m.StockExchangeDate like :stock_exchange_date')
-            ->setParameter('stock_exchange_date', '%' . $stock_exchange_date . '%')
-            ->andWhere('m.AccountingDate like :accounting_date')
-            ->setParameter('accounting_date', '%' . $accounting_date . '%')
-            ->getQuery()
-            ->getArrayResult();
+            ->addSelect('PARTIAL mc.{id,MembershipCode,MemberName}')
+            ->addSelect('PARTIAL v.{id,Isin,ValueLabel}')
+            ->addSelect('PARTIAL c.{id,CategoryCode,CategoryLabel}');
+        if ($AccountingDate) {
+            $qb->andWhere('m.AccountingDate like :AccountingDate')
+                ->setParameter('AccountingDate', '%' . $AccountingDate . '%');
+        }
+        if ($StockExchangeDate) {
+            $qb->andWhere('m.StockExchangeDate like :StockExchangeDate')
+                ->setParameter('StockExchangeDate', '%' . $StockExchangeDate . '%');
+        }
+        if ($ValueCode) {
+            $qb->andWhere('v.Isin like :ValueCode')
+                ->setParameter('ValueCode', '%' . $ValueCode . '%');
+        }
+        if ($MembershipCode) {
+            $qb->andWhere('mc.MembershipCode like :MembershipCode')
+                ->setParameter('MembershipCode', '%' . $MembershipCode . '%');
+        }
+        if ($NatureCode) {
+            $qb->andWhere('n.NatureCode like :NatureCode')
+                ->setParameter('NatureCode', '%' . $NatureCode . '%');
+        }
+        return $qb->getQuery()
+            ->getArrayResult(Query::HYDRATE_ARRAY);
     }
 
     /*

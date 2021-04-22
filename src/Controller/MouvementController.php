@@ -31,10 +31,12 @@ class MouvementController extends AbstractController
     {
         $search = json_decode($request->get('search'));
         $mouvements = $this->em->getRepository(Mouvement::class)->findByAll(
+            $search->startAccountingDate,
+            $search->endAccountingDate,
+            $search->startStockExchangeDate,
+            $search->endStockExchangeDate,
             $search->ValueCode,
             $search->OperationCode,
-            $search->StockExchangeDate,
-            $search->AccountingDate,
             $search->DeliveryMemberCode,
             $search->DeliveredMemberCode,
         );
@@ -48,10 +50,12 @@ class MouvementController extends AbstractController
     {
         $search = json_decode($request->get('search'));
         $sum = $this->em->getRepository(Mouvement::class)->findSum(
+            $search->startAccountingDate,
+            $search->endAccountingDate,
+            $search->startStockExchangeDate,
+            $search->endStockExchangeDate,
             $search->ValueCode,
             $search->OperationCode,
-            $search->StockExchangeDate,
-            $search->AccountingDate,
             $search->DeliveryMemberCode,
             $search->DeliveredMemberCode,
         );
