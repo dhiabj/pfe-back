@@ -25,14 +25,32 @@ class StockController extends AbstractController
     }
 
     /**
-     * @Route("/api/stocks", name="app_stock_all", methods={"GET"})
+     * @Route("/api/day-stocks", name="app_day_stocks_all", methods={"GET"})
      */
-    public function getAllStocks(Request $request): Response
+    public function getDayStocks(Request $request): Response
     {
         $search = json_decode($request->get('search'));
-        $stocks = $this->em->getRepository(Stock::class)->findByAll(
+        $stocks = $this->em->getRepository(Stock::class)->findByDay(
             $search->AccountingDate,
             $search->StockExchangeDate,
+            $search->ValueCode,
+            $search->MembershipCode,
+            $search->NatureCode
+        );
+        return $this->json($stocks);
+    }
+
+    /**
+     * @Route("/api/period-stocks", name="app_period_stocks_all", methods={"GET"})
+     */
+    public function getPeriodStocks(Request $request): Response
+    {
+        $search = json_decode($request->get('search'));
+        $stocks = $this->em->getRepository(Stock::class)->findByPeriod(
+            $search->startAccountingDate,
+            $search->endAccountingDate,
+            $search->startStockExchangeDate,
+            $search->endStockExchangeDate,
             $search->ValueCode,
             $search->MembershipCode,
             $search->NatureCode

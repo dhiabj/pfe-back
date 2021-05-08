@@ -73,56 +73,6 @@ class MouvementRepository extends ServiceEntityRepository
             ->getArrayResult(Query::HYDRATE_ARRAY);
     }
 
-    public function findSum(
-        $startAccountingDate,
-        $endAccountingDate,
-        $startStockExchangeDate,
-        $endStockExchangeDate,
-        $ValueCode,
-        $OperationCode,
-        $DeliveryMemberCode,
-        $DeliveredMemberCode
-    ) {
-        $qb = $this->createQueryBuilder('m')
-            ->leftJoin('m.OperationCode', 'oc')
-            ->leftJoin('m.Isin', 'v')
-            ->leftJoin('m.DeliveryMemberCode', 'dymc')
-            ->leftJoin('m.DeliveredMemberCode', 'dedmc')
-            ->select('sum(m.Amount) as AmountTotal')
-            ->addSelect('sum(m.TitlesNumber) as TitlesTotal');
-        // ->addSelect('PARTIAL v.{id,Isin,ValueLabel}')
-        // ->addSelect('PARTIAL dymc.{id,MembershipCode,MemberName}')
-        // ->addSelect('PARTIAL dedmc.{id,MembershipCode,MemberName}')
-        if ($startStockExchangeDate && $endStockExchangeDate) {
-            $qb->andWhere('m.StockExchangeDate BETWEEN :startStockExchangeDate AND :endStockExchangeDate')
-                ->setParameter('startStockExchangeDate', $startStockExchangeDate)
-                ->setParameter('endStockExchangeDate', $endStockExchangeDate);
-        }
-        if ($startAccountingDate && $endAccountingDate) {
-            $qb->andWhere('m.AccountingDate BETWEEN :startAccountingDate AND :endAccountingDate')
-                ->setParameter('startAccountingDate', $startAccountingDate)
-                ->setParameter('endAccountingDate', $endAccountingDate);
-        }
-        if ($ValueCode) {
-            $qb->andWhere('v.Isin like :ValueCode')
-                ->setParameter('ValueCode', '%' . $ValueCode . '%');
-        }
-        if ($OperationCode) {
-            $qb->andWhere('oc.OperationCode like :OperationCode')
-                ->setParameter('OperationCode', '%' . $OperationCode . '%');
-        }
-        if ($DeliveryMemberCode) {
-            $qb->andWhere('dymc.MembershipCode like :DeliveryMemberCode')
-                ->setParameter('DeliveryMemberCode', '%' . $DeliveryMemberCode . '%');
-        }
-        if ($DeliveredMemberCode) {
-            $qb->andWhere('dedmc.MembershipCode like :DeliveredMemberCode')
-                ->setParameter('DeliveredMemberCode', '%' . $DeliveredMemberCode . '%');
-        }
-        return $qb->getQuery()
-            ->getArrayResult();
-    }
-
     // ->addSelect('PARTIAL operation.{id,OperationCode,OperationLabel}')
     // ->leftJoin('m.Isin', 'value')
     // ->addSelect('PARTIAL value.{id,Isin,ValueLabel}')

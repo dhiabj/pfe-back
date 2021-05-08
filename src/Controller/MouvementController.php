@@ -44,25 +44,6 @@ class MouvementController extends AbstractController
     }
 
     /**
-     * @Route("/api/mouvement-sum", name="app_mouvement_sum_all", methods={"GET"})
-     */
-    public function getAllAmmounts(Request $request): Response
-    {
-        $search = json_decode($request->get('search'));
-        $sum = $this->em->getRepository(Mouvement::class)->findSum(
-            $search->startAccountingDate,
-            $search->endAccountingDate,
-            $search->startStockExchangeDate,
-            $search->endStockExchangeDate,
-            $search->ValueCode,
-            $search->OperationCode,
-            $search->DeliveryMemberCode,
-            $search->DeliveredMemberCode,
-        );
-        return $this->json($sum);
-    }
-
-    /**
      * @Route("/api/mouvement-upload-table", name="app_mouvement_upload_all", methods={"GET"})
      */
     public function getMvtUploads(): Response
@@ -71,6 +52,7 @@ class MouvementController extends AbstractController
 
         return $this->json($mvtable);
     }
+
     /**
      * @Route("/api/mouvements-fill", name="app_mouvements_fill", methods={"POST"})
      */

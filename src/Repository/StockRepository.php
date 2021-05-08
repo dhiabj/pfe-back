@@ -24,7 +24,7 @@ class StockRepository extends ServiceEntityRepository
     //  * @return Stock[] Returns an array of Stock objects
     //  */
 
-    public function findByAll(
+    public function findByDay(
         $AccountingDate,
         $StockExchangeDate,
         $ValueCode,
@@ -63,9 +63,50 @@ class StockRepository extends ServiceEntityRepository
             ->getArrayResult(Query::HYDRATE_ARRAY);
     }
 
-    /*
+    public function findByPeriod(
+        $startAccountingDate,
+        $endAccountingDate,
+        $startStockExchangeDate,
+        $endStockExchangeDate,
+        $ValueCode,
+        $MembershipCode,
+        $NatureCode
+    ) {
+        $qb = $this->createQueryBuilder('m')
+            ->leftJoin('m.MembershipCode', 'mc')
+            ->leftJoin('m.Isin', 'v')
+            ->leftJoin('m.NatureCode', 'n')
+            ->leftJoin('m.CategoryCode', 'c')
+            ->addSelect('PARTIAL mc.{id,MembershipCode,MemberName}')
+            ->addSelect('PARTIAL v.{id,Isin,ValueLabel}')
+            ->addSelect('PARTIAL c.{id,CategoryCode,CategoryLabel}');
+        if ($startStockExchangeDate && $endStockExchangeDate) {
+                $qb->andWhere('m.StockExchangeDate BETWEEN :startStockExchangeDate AND :endStockExchangeDate')
+                    ->setParameter('startStockExchangeDate', $startStockExchangeDate)
+                    ->setParameter('endStockExchangeDate', $endStockExchangeDate);
+            }
+        if ($startAccountingDate && $endAccountingDate) {
+                $qb->andWhere('m.AccountingDate BETWEEN :startAccountingDate AND :endAccountingDate')
+                    ->setParameter('startAccountingDate', $startAccountingDate)
+                    ->setParameter('endAccountingDate', $endAccountingDate);
+            }
+        if ($ValueCode) {
+            $qb->andWhere('v.Isin like :ValueCode')
+                ->setParameter('ValueCode', '%' . $ValueCode . '%');
+        }
+        if ($MembershipCode) {
+            $qb->andWhere('mc.MembershipCode like :MembershipCode')
+                ->setParameter('MembershipCode', '%' . $MembershipCode . '%');
+        }
+        if ($NatureCode) {
+            $qb->andWhere('n.NatureCode like :NatureCode')
+                ->setParameter('NatureCode', '%' . $NatureCode . '%');
+        }
+        return $qb->getQuery()
+            ->getArrayResult(Query::HYDRATE_ARRAY);
+    }
 
-    
+    /*
     public function findByExampleField($value)
     {
         return $this->createQueryBuilder('s')
